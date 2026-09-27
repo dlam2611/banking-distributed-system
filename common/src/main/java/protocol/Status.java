@@ -5,9 +5,14 @@ public enum Status {
     FAILED,
     ERROR,
     UNAUTHORIZED,
+    FORBIDDEN,
     INVALID_REQUEST,
+    INVALID_INPUT,
+    NOT_FOUND,
     ACCOUNT_NOT_FOUND,
+    DUPLICATE,
     INSUFFICIENT_FUNDS,
+    INTERNAL_ERROR,
     SERVER_UNAVAILABLE;
 
     public static Status fromString(String text) {

@@ -15,6 +15,12 @@ public class DBConnection {
     private static String password;
 
     static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("PostgreSQL JDBC Driver not found: " + e.getMessage());
+        }
+
         Properties props = new Properties();
         try (InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input != null) {
