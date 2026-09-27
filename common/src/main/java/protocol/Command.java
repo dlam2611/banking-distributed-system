@@ -5,6 +5,7 @@ public enum Command {
     LOGIN,
     LOGOUT,
     TRANSFER,
+    CHECK_ACCOUNT,
     GET_TRANSACTIONS,
     PING;
 

@@ -1,3 +1,4 @@
+import handler.CheckAccountHandler;
 import handler.LoginHandler;
 import handler.RegisterHandler;
 import handler.TransferHandler;
@@ -29,6 +30,7 @@ public class BankServer {
     private static final RegisterHandler registerHandler = new RegisterHandler(accountService);
     private static final LoginHandler loginHandler = new LoginHandler(accountService);
     private static final TransferHandler transferHandler = new TransferHandler(transferService);
+    private static final CheckAccountHandler checkAccountHandler = new CheckAccountHandler(accountService);
     public static void main(String[] args) {
         String serverId = args.length > 0 ? args[0] : "server-1";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
@@ -81,12 +83,16 @@ public class BankServer {
                         response = transferHandler.handle(request, serverId);
                         break;
 
+                    case CHECK_ACCOUNT:
+                        response = checkAccountHandler.handle(request, serverId);
+                        break;
+
                     case GET_TRANSACTIONS:
                         String targetAcc = request.getAccountId();
                         if (targetAcc == null || targetAcc.trim().isEmpty()) {
                             targetAcc = request.getPayload();
                         }
-                        List<Transaction> txList = transactionRepository.findRecentByAccount(targetAcc, 10);
+                        List<Transaction> txList = transactionRepository.findRecentByAccount(targetAcc, 5);
                         StringBuilder sb = new StringBuilder("[");
                         for (int i = 0; i < txList.size(); i++) {
                             if (i > 0) sb.append(",");

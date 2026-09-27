@@ -14,26 +14,38 @@ public class ServerConfig {
 
     public ServerConfig() {
         Properties props = new Properties();
-        try (InputStream in = getClass().getResourceAsStream("/config/server.properties")) {
-            if (in != null) {
-                props.load(in);
-            }
-        } catch (Exception ignored) {}
+        InputStream in = getClass().getResourceAsStream("/config/server.properties");
+        if (in == null) {
+            in = getClass().getResourceAsStream("/server.properties");
+        }
+        if (in == null) {
+            in = getClass().getClassLoader().getResourceAsStream("config/server.properties");
+        }
+        if (in != null) {
+            try (InputStream stream = in) {
+                props.load(stream);
+            } catch (Exception ignored) {}
+        }
 
-        this.port = Integer.parseInt(props.getProperty("port", "9000"));
-        this.serverPort = Integer.parseInt(props.getProperty("server.port", "8080"));
+        this.port = Integer.parseInt(props.getProperty("port", "9000").trim());
+        this.serverPort = Integer.parseInt(props.getProperty("server.port", "8080").trim());
 
-        String ips = props.getProperty("server.ips", "127.0.0.1");
+        // Danh sách các địa chỉ IP của 3 server (không cần truyền port, tự động dùng serverPort 8080)
+        String ips = props.getProperty("server.ips", "192.168.1.6,192.168.1.7,192.168.1.8").trim();
         String[] ipArray = ips.split(",");
         for (int i = 0; i < ipArray.length; i++) {
-            String ip = ipArray[i].trim();
-            if (!ip.isEmpty()) {
-                if (ip.contains(":")) {
-                    String[] parts = ip.split(":");
-                    servers.add(new ServerNode("server-" + (i + 1), parts[0].trim(), Integer.parseInt(parts[1].trim())));
-                } else {
-                    servers.add(new ServerNode("server-" + (i + 1), ip, serverPort));
+            String item = ipArray[i].trim();
+            if (!item.isEmpty()) {
+                String ip = item;
+                int port = this.serverPort; // Cùng port
+                if (item.contains(":")) {
+                    String[] parts = item.split(":");
+                    ip = parts[0].trim();
+                    try {
+                        port = Integer.parseInt(parts[1].trim());
+                    } catch (Exception ignored) {}
                 }
+                servers.add(new ServerNode("server-" + (i + 1), ip, port));
             }
         }
     }

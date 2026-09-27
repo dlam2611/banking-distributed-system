@@ -1,11 +1,14 @@
 package ui;
 
 import model.Account;
+import model.Response;
 import model.Transaction;
 import network.SocketClient;
+import protocol.Status;
 import ui.components.CardPanel;
 import ui.components.VectorIcons;
 import ui.theme.Theme;
+import util.JsonUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,6 +24,8 @@ import java.awt.GridLayout;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,11 +51,16 @@ import javax.swing.UIManager;
  */
 public class HomeFrame extends JFrame {
 
-    private final Account account;
+    private Account account;
     private boolean isBalanceHidden = false;
     private JLabel balanceLabel;
     private JLabel eyeToggleLabel;
     private CardPanel transactionsCard;
+
+    private javax.swing.Timer autoSyncTimer;
+    private JPanel notificationBanner;
+    private JLabel notifTitleLabel;
+    private JLabel notifDescLabel;
 
     public HomeFrame() {
         this(createDefaultAccount());
@@ -64,6 +74,15 @@ public class HomeFrame extends JFrame {
         setMinimumSize(new Dimension(380, 560));
         setLocationRelativeTo(null);
         getContentPane().setBackground(Theme.BACKGROUND);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (autoSyncTimer != null) {
+                    autoSyncTimer.stop();
+                }
+            }
+        });
 
         initUI();
     }
@@ -90,7 +109,11 @@ public class HomeFrame extends JFrame {
 
         // 1. Top Header (Logo + NexBank Digital + Bell + Avatar)
         mainContent.add(createTopHeader());
-        mainContent.add(Box.createVerticalStrut(8));
+        mainContent.add(Box.createVerticalStrut(6));
+
+        // 1.1 Banner thông báo Biến động số dư tự động
+        mainContent.add(createNotificationBanner());
+        mainContent.add(Box.createVerticalStrut(6));
 
         // 2. Greeting Section ("Xin chào, Nguyễn Văn An" + NexPriority badge)
         mainContent.add(createGreetingSection());
@@ -124,6 +147,9 @@ public class HomeFrame extends JFrame {
 
         // Tải dữ liệu giao dịch từ Backend
         loadTransactionsFromBackend();
+
+        // Khởi động đồng bộ biến động số dư và giao dịch thời gian thực
+        startRealtimeSync();
     }
 
     /**
@@ -521,7 +547,7 @@ public class HomeFrame extends JFrame {
                 VectorIcons.createTransferArrowsIcon(20, Color.WHITE),
                 Theme.PRIMARY,
                 null,
-                () -> JOptionPane.showMessageDialog(this, "Mở giao diện chuyển tiền nhanh 24/7.", "Chuyển tiền", JOptionPane.INFORMATION_MESSAGE)
+                () -> openTransferScreen()
         ));
 
         // 2. Nạp / Quét QR
@@ -629,8 +655,7 @@ public class HomeFrame extends JFrame {
         section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
         section.setOpaque(false);
         section.setAlignmentX(Component.CENTER_ALIGNMENT);
-        section.setPreferredSize(new Dimension(380, 240));
-        section.setMaximumSize(new Dimension(380, 320));
+        section.setMaximumSize(new Dimension(380, Integer.MAX_VALUE));
 
         // Header: "Giao dịch gần đây" --------- "Xem tất cả ›"
         JPanel headerRow = new JPanel(new BorderLayout());
@@ -667,7 +692,7 @@ public class HomeFrame extends JFrame {
         transactionsCard.setLayout(new BoxLayout(transactionsCard, BoxLayout.Y_AXIS));
         transactionsCard.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
         transactionsCard.setAlignmentX(Component.CENTER_ALIGNMENT);
-        transactionsCard.setMaximumSize(new Dimension(380, 280));
+        transactionsCard.setMaximumSize(new Dimension(380, Integer.MAX_VALUE));
 
         // Trạng thái đang tải ban đầu
         JPanel loadingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 14));
@@ -708,7 +733,8 @@ public class HomeFrame extends JFrame {
         transactionsCard.removeAll();
 
         if (list != null && !list.isEmpty()) {
-            for (int i = 0; i < list.size(); i++) {
+            int displayCount = Math.min(list.size(), 5);
+            for (int i = 0; i < displayCount; i++) {
                 Transaction tx = list.get(i);
                 boolean isOutgoing = account.getAccountId() != null && account.getAccountId().equals(tx.getFromAccount());
 
@@ -726,7 +752,7 @@ public class HomeFrame extends JFrame {
                 Color amountColor = isOutgoing ? Theme.TEXT_PRIMARY : new Color(5, 150, 105);
 
                 transactionsCard.add(createTransactionItem(icon, iconBg, title, subtitle, amountStr, amountColor));
-                if (i < list.size() - 1) {
+                if (i < displayCount - 1) {
                     transactionsCard.add(createDivider());
                 }
             }
@@ -871,7 +897,7 @@ public class HomeFrame extends JFrame {
 
         // Tab 2: Chuyển tiền
         dock.add(createDockTab("Chuyển tiền", VectorIcons.createTransferArrowsIcon(18, Theme.TEXT_MUTED), Theme.TEXT_MUTED, false, () -> {
-            JOptionPane.showMessageDialog(this, "Chuyển sang màn hình Chuyển tiền nội bộ / liên ngân hàng 24/7.", "Chuyển tiền", JOptionPane.INFORMATION_MESSAGE);
+            openTransferScreen();
         }));
 
         // Tab 3: Thẻ & GD
@@ -949,6 +975,164 @@ public class HomeFrame extends JFrame {
             sb.append(raw.charAt(i));
         }
         return sb.toString();
+    }
+
+    public void openTransferScreen() {
+        TransferFrame tf = new TransferFrame(account, this);
+        tf.setVisible(true);
+    }
+
+    private void updateBalanceDisplay() {
+        if (balanceLabel != null && account != null) {
+            balanceLabel.setText(isBalanceHidden ? "••••••••• VND" : formatBalanceString(account.getBalance()));
+        }
+    }
+
+    public void updateAccountAndRefresh(Account updatedAccount) {
+        if (updatedAccount != null) {
+            this.account = updatedAccount;
+        }
+        updateBalanceDisplay();
+        loadTransactionsFromBackend();
+    }
+
+    /**
+     * Banner thông báo nhận tiền biến động số dư Realtime.
+     */
+    private JPanel createNotificationBanner() {
+        notificationBanner = new JPanel(new BorderLayout(10, 0)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(new Color(236, 253, 245)); // #ECFDF5 emerald
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.setColor(new Color(16, 185, 129)); // #10B981 border
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        notificationBanner.setOpaque(false);
+        notificationBanner.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
+        notificationBanner.setMaximumSize(new Dimension(380, 48));
+        notificationBanner.setPreferredSize(new Dimension(380, 48));
+        notificationBanner.setAlignmentX(Component.CENTER_ALIGNMENT);
+        notificationBanner.setVisible(false);
+
+        JLabel bellIcon = new JLabel(VectorIcons.createBellIcon(18, new Color(5, 150, 105), true));
+        notificationBanner.add(bellIcon, BorderLayout.WEST);
+
+        JPanel textCol = new JPanel();
+        textCol.setLayout(new BoxLayout(textCol, BoxLayout.Y_AXIS));
+        textCol.setOpaque(false);
+
+        notifTitleLabel = new JLabel("Biến động số dư: +0 đ");
+        notifTitleLabel.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 12));
+        notifTitleLabel.setForeground(new Color(6, 95, 70));
+
+        notifDescLabel = new JLabel("Nhận tiền từ đối tác");
+        notifDescLabel.setFont(new Font(Theme.FONT_FAMILY, Font.PLAIN, 10));
+        notifDescLabel.setForeground(new Color(4, 120, 87));
+
+        textCol.add(notifTitleLabel);
+        textCol.add(Box.createVerticalStrut(2));
+        textCol.add(notifDescLabel);
+        notificationBanner.add(textCol, BorderLayout.CENTER);
+
+        JLabel closeX = new JLabel(VectorIcons.createClearIcon(14, new Color(5, 150, 105)));
+        closeX.setCursor(Theme.HAND_CURSOR);
+        closeX.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                notificationBanner.setVisible(false);
+                if (notificationBanner.getParent() != null) {
+                    notificationBanner.getParent().revalidate();
+                    notificationBanner.getParent().repaint();
+                }
+            }
+        });
+        notificationBanner.add(closeX, BorderLayout.EAST);
+
+        return notificationBanner;
+    }
+
+    private void showBalanceChangeNotification(String amountStr, String descStr) {
+        if (notifTitleLabel != null) {
+            notifTitleLabel.setText("Biến động số dư: " + amountStr);
+        }
+        if (notifDescLabel != null) {
+            notifDescLabel.setText(descStr);
+        }
+        if (notificationBanner != null) {
+            notificationBanner.setVisible(true);
+            notificationBanner.revalidate();
+            notificationBanner.repaint();
+            if (notificationBanner.getParent() != null) {
+                notificationBanner.getParent().revalidate();
+                notificationBanner.getParent().repaint();
+            }
+            try {
+                java.awt.Toolkit.getDefaultToolkit().beep();
+            } catch (Exception ignored) {}
+
+            javax.swing.Timer hideTimer = new javax.swing.Timer(8000, evt -> {
+                if (notificationBanner != null) {
+                    notificationBanner.setVisible(false);
+                    if (notificationBanner.getParent() != null) {
+                        notificationBanner.getParent().revalidate();
+                        notificationBanner.getParent().repaint();
+                    }
+                }
+            });
+            hideTimer.setRepeats(false);
+            hideTimer.start();
+        }
+    }
+
+    /**
+     * Tự động đồng bộ số dư & lịch sử giao dịch mỗi 2.0s khi có biến động từ phía đối tác.
+     */
+    private void startRealtimeSync() {
+        if (account == null || account.getAccountId() == null) return;
+
+        autoSyncTimer = new javax.swing.Timer(2000, e -> {
+            new Thread(() -> {
+                try {
+                    String accId = account.getAccountId();
+                    Response accResp = SocketClient.getInstance().checkAccount(accId);
+                    if (accResp != null && accResp.getStatus() == Status.SUCCESS && accResp.getData() != null) {
+                        Account latest = JsonUtil.fromJson(accResp.getData(), Account.class);
+                        if (latest != null && latest.getBalance() != null) {
+                            BigDecimal oldBal = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
+                            BigDecimal newBal = latest.getBalance();
+
+                            if (oldBal.compareTo(newBal) != 0) {
+                                BigDecimal diff = newBal.subtract(oldBal);
+                                account.setBalance(newBal);
+
+                                List<Transaction> newTxList = SocketClient.getInstance().getRecentTransactions(accId);
+
+                                SwingUtilities.invokeLater(() -> {
+                                    updateBalanceDisplay();
+                                    renderTransactions(newTxList);
+
+                                    // Nếu là tiền vào (số dư tăng) -> Kích hoạt chuông & banner thông báo biến động số dư
+                                    if (diff.compareTo(BigDecimal.ZERO) > 0) {
+                                        String senderName = (newTxList != null && !newTxList.isEmpty())
+                                                ? newTxList.get(0).getDescription()
+                                                : "Đối tác";
+                                        showBalanceChangeNotification("+" + formatAmount(diff) + " đ", "Nhận tiền từ " + senderName);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+            }).start();
+        });
+        autoSyncTimer.start();
     }
 
     public static void main(String[] args) {

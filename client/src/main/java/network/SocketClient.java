@@ -1,6 +1,8 @@
 package network;
 
 import dto.LoginDTO;
+import dto.RegisterDTO;
+import dto.TransferDTO;
 import model.Request;
 import model.Response;
 import model.Transaction;
@@ -93,6 +95,34 @@ public class SocketClient {
         request.setAccountId(dto.getAccountId());
         request.setPayload(payloadJson);
 
+        return send(request);
+    }
+
+    /**
+     * Tra cứu thông tin chủ tài khoản nhận (xem họ tên người nhận).
+     */
+    public Response checkAccount(String targetAccount) {
+        if (targetAccount == null || targetAccount.trim().isEmpty()) {
+            return Response.error(null, Status.INVALID_INPUT, "Số tài khoản không được để trống!");
+        }
+        String cleanAcc = targetAccount.trim();
+        Request request = new Request(Command.CHECK_ACCOUNT, cleanAcc);
+        request.setAccountId(cleanAcc);
+        request.setPayload(cleanAcc);
+        return send(request);
+    }
+
+    /**
+     * Thực hiện chuyển tiền an toàn.
+     */
+    public Response transfer(String fromAccount, TransferDTO dto) {
+        if (fromAccount == null || dto == null) {
+            return Response.error(null, Status.INVALID_INPUT, "Thông tin chuyển tiền không hợp lệ!");
+        }
+        String payloadJson = JsonUtil.toJson(dto);
+        Request request = new Request(Command.TRANSFER, fromAccount);
+        request.setAccountId(fromAccount);
+        request.setPayload(payloadJson);
         return send(request);
     }
 

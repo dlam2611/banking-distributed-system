@@ -31,8 +31,11 @@ public class TransactionRepository {
         }
     }
 
+    private final AccountRepository accountRepository = new AccountRepository();
+
     /**
      * Lấy danh sách giao dịch gần nhất của tài khoản (gửi hoặc nhận).
+     * Server tự động tra cứu tên người dùng đối tác từ toAccount (hoặc fromAccount).
      */
     public java.util.List<Transaction> findRecentByAccount(String accountId, int limit) {
         java.util.List<Transaction> list = new java.util.ArrayList<>();
@@ -56,7 +59,25 @@ public class TransactionRepository {
                     tx.setAmount(rs.getBigDecimal("amount"));
                     tx.setTransactionType(rs.getString("transaction_type"));
                     tx.setStatus(rs.getString("status"));
-                    tx.setDescription(rs.getString("description"));
+
+                    // Phía server tự động từ toAccount (hoặc fromAccount) lấy ra tên người dùng
+                    String counterpartyAcc = accountId.equals(tx.getFromAccount()) ? tx.getToAccount() : tx.getFromAccount();
+                    String personName = null;
+                    if (counterpartyAcc != null && !counterpartyAcc.trim().isEmpty()) {
+                        try {
+                            model.Account counterparty = accountRepository.findById(counterpartyAcc);
+                            if (counterparty != null && counterparty.getFullName() != null && !counterparty.getFullName().trim().isEmpty()) {
+                                personName = counterparty.getFullName();
+                            }
+                        } catch (Exception ignored) {}
+                    }
+
+                    if (personName != null) {
+                        tx.setDescription(personName);
+                    } else {
+                        tx.setDescription(rs.getString("description"));
+                    }
+
                     Timestamp ts = rs.getTimestamp("created_at");
                     if (ts != null) {
                         tx.setCreatedAt(ts.toLocalDateTime());

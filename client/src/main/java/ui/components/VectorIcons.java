@@ -224,6 +224,63 @@ public final class VectorIcons {
     }
 
     /**
+     * Left Arrow icon for back navigation ("←").
+     */
+    public static Icon createArrowLeftIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int midY = y + size / 2;
+                g2.drawLine(x + 2, midY, x + size - 2, midY);
+                g2.drawLine(x + 6, midY - 4, x + 2, midY);
+                g2.drawLine(x + 6, midY + 4, x + 2, midY);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Triangle warning alert icon (⚠).
+     */
+    public static Icon createWarningIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                Path2D tri = new Path2D.Double();
+                tri.moveTo(x + size * 0.5, y + 2);
+                tri.lineTo(x + size - 2, y + size - 2);
+                tri.lineTo(x + 2, y + size - 2);
+                tri.closePath();
+                g2.draw(tri);
+
+                // Exclamation mark
+                int mx = x + size / 2;
+                g2.drawLine(mx, y + (int)(size * 0.36), mx, y + (int)(size * 0.64));
+                g2.fillOval(mx - 1, y + (int)(size * 0.74), 2, 2);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
      * Face ID / Biometrics smiley icon.
      */
     public static Icon createFaceIdIcon(int size, Color color) {
