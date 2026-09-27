@@ -80,6 +80,19 @@ public class SocketClient {
         return send(request);
     }
 
+    /**
+     * Thực hiện gửi request ĐĂNG KÝ tài khoản mới.
+     */
+    public Response register(dto.RegisterDTO dto) {
+        String payloadJson = JsonUtil.toJson(dto);
+
+        Request request = new Request(Command.REGISTER, dto.getCccd());
+        request.setAccountId(dto.getAccountId());
+        request.setPayload(payloadJson);
+
+        return send(request);
+    }
+
     private Response executeSocketCall(String targetHost, int targetPort, Request request) throws IOException {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(targetHost, targetPort), timeoutMs);

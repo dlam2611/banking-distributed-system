@@ -328,4 +328,130 @@ public final class VectorIcons {
             @Override public int getIconHeight() { return size; }
         };
     }
+
+    /**
+     * Bank building icon (🏛).
+     */
+    public static Icon createBankIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // Roof triangle
+                Path2D roof = new Path2D.Double();
+                roof.moveTo(x + size * 0.5, y + size * 0.15);
+                roof.lineTo(x + size * 0.88, y + size * 0.35);
+                roof.lineTo(x + size * 0.12, y + size * 0.35);
+                roof.closePath();
+                g2.fill(roof);
+
+                // Pillars
+                int py1 = (int) (y + size * 0.40);
+                int py2 = (int) (y + size * 0.75);
+                g2.drawLine((int)(x + size * 0.22), py1, (int)(x + size * 0.22), py2);
+                g2.drawLine((int)(x + size * 0.41), py1, (int)(x + size * 0.41), py2);
+                g2.drawLine((int)(x + size * 0.59), py1, (int)(x + size * 0.59), py2);
+                g2.drawLine((int)(x + size * 0.78), py1, (int)(x + size * 0.78), py2);
+
+                // Base floor
+                int by = (int) (y + size * 0.78);
+                g2.fillRect((int)(x + size * 0.10), by, (int)(size * 0.80), (int)(size * 0.10));
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Lightning bolt icon (⚡).
+     */
+    public static Icon createLightningIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+
+                Path2D bolt = new Path2D.Double();
+                bolt.moveTo(x + size * 0.55, y + size * 0.05);
+                bolt.lineTo(x + size * 0.20, y + size * 0.55);
+                bolt.lineTo(x + size * 0.50, y + size * 0.55);
+                bolt.lineTo(x + size * 0.42, y + size * 0.95);
+                bolt.lineTo(x + size * 0.82, y + size * 0.42);
+                bolt.lineTo(x + size * 0.52, y + size * 0.42);
+                bolt.closePath();
+                g2.fill(bolt);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Mobile phone icon (📱).
+     */
+    public static Icon createPhoneIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int pw = (int) (size * 0.55);
+                int ph = (int) (size * 0.85);
+                int px = x + (size - pw) / 2;
+                int py = y + (size - ph) / 2;
+
+                g2.drawRoundRect(px, py, pw, ph, 4, 4);
+                // Home indicator dot
+                g2.fillOval(x + size / 2 - 1, py + ph - 4, 3, 3);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * ID Card / Credit Card icon (💳).
+     */
+    public static Icon createCardIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int cw = (int) (size * 0.85);
+                int ch = (int) (size * 0.60);
+                int cx = x + (size - cw) / 2;
+                int cy = y + (size - ch) / 2;
+
+                g2.drawRoundRect(cx, cy, cw, ch, 4, 4);
+                g2.drawLine(cx, cy + (int)(ch * 0.35), cx + cw, cy + (int)(ch * 0.35));
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
 }

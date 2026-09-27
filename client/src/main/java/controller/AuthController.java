@@ -65,10 +65,9 @@ public class AuthController {
         loginFrame.getRegisterLink().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                JOptionPane.showMessageDialog(loginFrame,
-                        "Tính năng Đăng ký tài khoản NexBank sẽ được tích hợp ở bước tiếp theo.",
-                        "Đăng ký tài khoản",
-                        JOptionPane.INFORMATION_MESSAGE);
+                loginFrame.dispose();
+                ui.RegisterFrame registerFrame = new ui.RegisterFrame();
+                registerFrame.setVisible(true);
             }
         });
     }
