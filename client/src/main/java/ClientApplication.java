@@ -1,18 +1,45 @@
+import controller.AuthController;
 import model.Request;
 import model.Response;
 import network.MessageReader;
 import network.MessageWriter;
 import protocol.Command;
+import ui.LoginFrame;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class ClientApplication {
 
     public static void main(String[] args) {
-        String host = args.length > 0 ? args[0] : "127.0.0.1";
-        int port = args.length > 1 ? Integer.parseInt(args[1]) : 9000;
+        if (args.length > 0 && "--cli".equalsIgnoreCase(args[0])) {
+            runCli(args);
+        } else {
+            launchGui();
+        }
+    }
+
+    public static void launchGui() {
+        try {
+            System.setProperty("awt.useSystemAAFontSettings", "on");
+            System.setProperty("swing.aatext", "true");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame loginFrame = new LoginFrame();
+            new AuthController(loginFrame);
+            loginFrame.setVisible(true);
+        });
+    }
+
+    private static void runCli(String[] args) {
+        String host = args.length > 1 ? args[1] : "127.0.0.1";
+        int port = args.length > 2 ? Integer.parseInt(args[2]) : 9000;
 
         System.out.println("Connecting to Load Balancer at " + host + ":" + port + "...");
 

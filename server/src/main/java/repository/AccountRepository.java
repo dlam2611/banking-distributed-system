@@ -118,6 +118,19 @@ public class AccountRepository {
         }
     }
 
+    /**
+     * Cập nhật mật khẩu mới (đã mã hóa) cho tài khoản.
+     */
+    public boolean updatePassword(String accountId, String hashedPassword) throws SQLException {
+        String sql = "UPDATE accounts SET password = ? WHERE account_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword);
+            ps.setString(2, accountId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
     private Account mapRow(ResultSet rs) throws SQLException {
         Timestamp ts = rs.getTimestamp("created_at");
         LocalDateTime createdAt = ts != null ? ts.toLocalDateTime() : LocalDateTime.now();

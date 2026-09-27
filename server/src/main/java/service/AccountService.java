@@ -79,13 +79,16 @@ public class AccountService {
                 return ServiceResult.error(Status.DUPLICATE, "Số điện thoại [" + phone + "] đã được đăng ký!");
             }
 
-            // 8. Tạo mới tài khoản với số dư khởi tạo = 0 và trạng thái ACTIVE
+            // 8. Băm mật khẩu bằng BCrypt trước khi lưu database
+            String hashedPassword = util.PasswordUtil.hashPassword(dto.getPassword());
+
+            // Tạo mới tài khoản với số dư khởi tạo = 0 và trạng thái ACTIVE
             Account account = new Account(
                     accountId,
                     fullName,
                     cccd,
                     phone,
-                    dto.getPassword(), // Trong thực tế băm BCrypt, ở đây lưu password bảo mật
+                    hashedPassword,
                     pin,
                     BigDecimal.ZERO,
                     "ACTIVE",
@@ -108,7 +111,7 @@ public class AccountService {
     }
 
     /**
-     * Xử lý ĐĂNG NHẬP bằng CCCD và Password.
+     * Xử lý ĐĂNG NHẬP bằng CCCD/Số tài khoản và Password (đã mã hóa BCrypt).
      */
     public ServiceResult login(LoginDTO dto) {
         if (dto == null) {
@@ -116,24 +119,40 @@ public class AccountService {
         }
 
         if (dto.getCccd() == null || dto.getCccd().trim().isEmpty()) {
-            return ServiceResult.error(Status.INVALID_INPUT, "Vui lòng nhập số CCCD!");
+            return ServiceResult.error(Status.INVALID_INPUT, "Vui lòng nhập số CCCD hoặc Tên đăng nhập!");
         }
 
         if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
             return ServiceResult.error(Status.INVALID_INPUT, "Vui lòng nhập mật khẩu!");
         }
 
-        String cccd = dto.getCccd().trim();
+        String identifier = dto.getCccd().trim();
         String password = dto.getPassword();
 
         try {
-            Account account = accountRepository.findByCccd(cccd);
+            // Hỗ trợ đăng nhập linh hoạt bằng CCCD hoặc Số tài khoản
+            Account account = accountRepository.findByCccd(identifier);
+            if (account == null) {
+                account = accountRepository.findById(identifier);
+            }
+
             if (account == null) {
                 return ServiceResult.error(Status.UNAUTHORIZED, "Số CCCD hoặc mật khẩu không chính xác!");
             }
 
-            if (!password.equals(account.getPassword())) {
+            // Xác thực mật khẩu qua BCrypt (hỗ trợ cả tài khoản cũ plain-text)
+            boolean passwordValid = util.PasswordUtil.checkPassword(password, account.getPassword());
+            if (!passwordValid) {
                 return ServiceResult.error(Status.UNAUTHORIZED, "Số CCCD hoặc mật khẩu không chính xác!");
+            }
+
+            // Nếu mật khẩu trong DB chưa được băm BCrypt, tự động nâng cấp mã hóa
+            if (!util.PasswordUtil.isBCryptHash(account.getPassword())) {
+                try {
+                    accountRepository.updatePassword(account.getAccountId(), util.PasswordUtil.hashPassword(password));
+                } catch (Exception e) {
+                    System.err.println("Cảnh báo: Không thể tự động nâng cấp hash mật khẩu: " + e.getMessage());
+                }
             }
 
             if (!"ACTIVE".equalsIgnoreCase(account.getStatus())) {
@@ -147,6 +166,37 @@ public class AccountService {
         } catch (SQLException e) {
             System.err.println("Lỗi SQL khi đăng nhập: " + e.getMessage());
             return ServiceResult.error(Status.INTERNAL_ERROR, "Lỗi cơ sở dữ liệu khi đăng nhập: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Tra cứu thông tin tài khoản theo số tài khoản hoặc CCCD.
+     */
+    public ServiceResult lookupAccount(String targetAccount) {
+        if (targetAccount == null || targetAccount.trim().isEmpty()) {
+            return ServiceResult.error(Status.INVALID_INPUT, "Số tài khoản tra cứu không được để trống!");
+        }
+
+        String query = targetAccount.trim();
+        try {
+            Account account = accountRepository.findById(query);
+            if (account == null) {
+                account = accountRepository.findByCccd(query);
+            }
+
+            if (account == null) {
+                return ServiceResult.error(Status.ACCOUNT_NOT_FOUND, "Không tìm thấy thông tin tài khoản [" + query + "]!");
+            }
+
+            if (!"ACTIVE".equalsIgnoreCase(account.getStatus())) {
+                return ServiceResult.error(Status.FORBIDDEN, "Tài khoản [" + query + "] đang bị khóa hoặc ngưng hoạt động!");
+            }
+
+            Account sanitized = sanitize(account);
+            return ServiceResult.success("Tra cứu tài khoản thành công!", JsonUtil.toJson(sanitized));
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi tra cứu tài khoản: " + e.getMessage());
+            return ServiceResult.error(Status.INTERNAL_ERROR, "Lỗi cơ sở dữ liệu khi tra cứu tài khoản: " + e.getMessage());
         }
     }
 
