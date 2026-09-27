@@ -155,6 +155,13 @@ public final class VectorIcons {
     }
 
     /**
+     * Eye icon for show/hide with default unslashed.
+     */
+    public static Icon createEyeIcon(int size, Color color) {
+        return createEyeIcon(size, color, false);
+    }
+
+    /**
      * Eye icon for show/hide password.
      */
     public static Icon createEyeIcon(int size, Color color, boolean slashed) {
@@ -454,4 +461,404 @@ public final class VectorIcons {
             @Override public int getIconHeight() { return size; }
         };
     }
+
+    /**
+     * Notification Bell icon (🔔) with optional red unread dot.
+     */
+    public static Icon createBellIcon(int size, Color color, boolean hasUnread) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // Bell body
+                Path2D bell = new Path2D.Double();
+                bell.moveTo(x + size * 0.5, y + size * 0.18);
+                bell.curveTo(x + size * 0.70, y + size * 0.18, x + size * 0.78, y + size * 0.55, x + size * 0.85, y + size * 0.72);
+                bell.lineTo(x + size * 0.15, y + size * 0.72);
+                bell.curveTo(x + size * 0.22, y + size * 0.55, x + size * 0.30, y + size * 0.18, x + size * 0.5, y + size * 0.18);
+                bell.closePath();
+                g2.draw(bell);
+
+                // Clapper
+                g2.drawArc((int)(x + size * 0.42), (int)(y + size * 0.72), (int)(size * 0.16), (int)(size * 0.16), 180, 180);
+
+                // Unread red dot
+                if (hasUnread) {
+                    g2.setColor(new Color(239, 68, 68)); // #EF4444
+                    g2.fillOval(x + size - 5, y + 1, 6, 6);
+                }
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * QR Code icon.
+     */
+    public static Icon createQrIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+
+                int s = (int) (size * 0.35);
+                // Top-left
+                g2.drawRoundRect(x + 1, y + 1, s, s, 2, 2);
+                g2.fillRect(x + 3, y + 3, s - 4, s - 4);
+
+                // Top-right
+                g2.drawRoundRect(x + size - s - 1, y + 1, s, s, 2, 2);
+                g2.fillRect(x + size - s + 1, y + 3, s - 4, s - 4);
+
+                // Bottom-left
+                g2.drawRoundRect(x + 1, y + size - s - 1, s, s, 2, 2);
+                g2.fillRect(x + 3, y + size - s + 1, s - 4, s - 4);
+
+                // Bottom-right pattern
+                int dot = 3;
+                g2.fillRect(x + size - s + 2, y + size - s + 2, dot, dot);
+                g2.fillRect(x + size - 4, y + size - 4, dot, dot);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Piggy Bank / Savings icon.
+     */
+    public static Icon createPiggyBankIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // Piggy bank facing left matching mockup
+                int bw = (int)(size * 0.65);
+                int bh = (int)(size * 0.54);
+                int bx = x + (int)(size * 0.22);
+                int by = y + (int)(size * 0.22);
+
+                // Body
+                g2.drawOval(bx, by, bw, bh);
+
+                // Snout protruding left
+                g2.drawRoundRect(bx - 3, by + (int)(bh * 0.32), 4, (int)(bh * 0.36), 2, 2);
+
+                // Ear on top right
+                g2.drawArc(bx + bw - 5, by - 3, 5, 5, 0, 180);
+
+                // Eye
+                g2.fillOval(bx + 4, by + (int)(bh * 0.35), 2, 2);
+
+                // Coin slot on top
+                g2.drawLine(bx + bw / 2 - 2, by, bx + bw / 2 + 2, by);
+
+                // Short legs
+                g2.drawLine(bx + 3, by + bh - 1, bx + 3, by + bh + 3);
+                g2.drawLine(bx + bw - 4, by + bh - 1, bx + bw - 4, by + bh + 3);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Receipt / Bill icon.
+     */
+    public static Icon createReceiptIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int rw = (int)(size * 0.65);
+                int rh = (int)(size * 0.85);
+                int rx = x + (size - rw) / 2;
+                int ry = y + (size - rh) / 2;
+
+                g2.drawRoundRect(rx, ry, rw, rh, 3, 3);
+                g2.drawLine(rx + 4, ry + (int)(rh * 0.35), rx + rw - 4, ry + (int)(rh * 0.35));
+                g2.drawLine(rx + 4, ry + (int)(rh * 0.55), rx + rw - 4, ry + (int)(rh * 0.55));
+                g2.drawLine(rx + 4, ry + (int)(rh * 0.75), rx + rw - 8, ry + (int)(rh * 0.75));
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Two opposite arrows (⇄) for Transfer.
+     */
+    public static Icon createTransferArrowsIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // Top arrow pointing right
+                int y1 = y + (int)(size * 0.35);
+                g2.drawLine(x + 3, y1, x + size - 3, y1);
+                g2.drawLine(x + size - 7, y1 - 3, x + size - 3, y1);
+                g2.drawLine(x + size - 7, y1 + 3, x + size - 3, y1);
+
+                // Bottom arrow pointing left
+                int y2 = y + (int)(size * 0.65);
+                g2.drawLine(x + 3, y2, x + size - 3, y2);
+                g2.drawLine(x + 7, y2 - 3, x + 3, y2);
+                g2.drawLine(x + 7, y2 + 3, x + 3, y2);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Building / Office icon for CTY TNHH.
+     */
+    public static Icon createBuildingIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int bw = (int)(size * 0.70);
+                int bh = (int)(size * 0.80);
+                int bx = x + (size - bw) / 2;
+                int by = y + size - bh - 1;
+
+                g2.drawRoundRect(bx, by, bw, bh, 3, 3);
+                // Windows
+                g2.drawLine(bx + 4, by + 4, bx + 7, by + 4);
+                g2.drawLine(bx + bw - 7, by + 4, bx + bw - 4, by + 4);
+                g2.drawLine(bx + 4, by + 9, bx + 7, by + 9);
+                g2.drawLine(bx + bw - 7, by + 9, bx + bw - 4, by + 9);
+                // Door
+                g2.drawRect(bx + bw / 2 - 3, by + bh - 6, 6, 6);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Coffee cup icon for Highland Coffee.
+     */
+    public static Icon createCoffeeIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int cw = (int)(size * 0.52);
+                int ch = (int)(size * 0.46);
+                int cx = x + (size - cw) / 2 - 2;
+                int cy = y + (int)(size * 0.26);
+
+                // Cup body (slightly rounded base)
+                g2.drawRoundRect(cx, cy, cw, ch, 4, 4);
+                // Handle on the right
+                g2.drawArc(cx + cw - 2, cy + 2, (int)(size * 0.24), (int)(ch * 0.65), -90, 180);
+                // Saucer line under the cup
+                g2.drawLine(cx - 2, cy + ch + 3, cx + cw + 3, cy + ch + 3);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Copy icon (for copying account number).
+     */
+    public static Icon createCopyIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int box = (int)(size * 0.65);
+                // Back sheet
+                g2.drawRoundRect(x + size - box, y, box, box, 2, 2);
+                // Front sheet
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(x, y + size - box, box, box, 2, 2);
+                g2.setColor(color);
+                g2.drawRoundRect(x, y + size - box, box, box, 2, 2);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Grid / Dashboard Dock icon.
+     */
+    public static Icon createGridIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+
+                int dot = (int)(size * 0.38);
+                int gap = (int)(size * 0.16);
+                g2.fillRoundRect(x, y, dot, dot, 2, 2);
+                g2.fillRoundRect(x + dot + gap, y, dot, dot, 2, 2);
+                g2.fillRoundRect(x, y + dot + gap, dot, dot, 2, 2);
+                g2.fillRoundRect(x + dot + gap, y + dot + gap, dot, dot, 2, 2);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Contactless payment wave icon (RFID/NFC arcs).
+     */
+    public static Icon createContactlessIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(1.8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                // 3 concentric curved arcs oriented towards right
+                int cx = x - size / 4;
+                int cy = y - size / 4;
+                int span = 55;
+                int start = -28;
+
+                g2.drawArc(cx + (int)(size * 0.25), cy + (int)(size * 0.25), (int)(size * 0.70), (int)(size * 0.70), start, span);
+                g2.drawArc(cx + (int)(size * 0.10), cy + (int)(size * 0.10), (int)(size * 1.00), (int)(size * 1.00), start, span);
+                g2.drawArc(cx - (int)(size * 0.05), cy - (int)(size * 0.05), (int)(size * 1.30), (int)(size * 1.30), start, span);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * Crisp checkmark icon (✓).
+     */
+    public static Icon createCheckIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+                g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int x1 = x + (int)(size * 0.20);
+                int y1 = y + (int)(size * 0.52);
+                int x2 = x + (int)(size * 0.44);
+                int y2 = y + (int)(size * 0.76);
+                int x3 = x + (int)(size * 0.82);
+                int y3 = y + (int)(size * 0.24);
+
+                g2.drawLine(x1, y1, x2, y2);
+                g2.drawLine(x2, y2, x3, y3);
+
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
+
+    /**
+     * 4-pointed golden sparkle icon (✨).
+     */
+    public static Icon createSparkleIcon(int size, Color color) {
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                Theme.applyQualityRendering(g2);
+                g2.setColor(color);
+
+                Path2D p = new Path2D.Double();
+                double cx = x + size / 2.0;
+                double cy = y + size / 2.0;
+                double rOuter = size * 0.48;
+                double rInner = size * 0.14;
+
+                p.moveTo(cx, cy - rOuter);
+                p.quadTo(cx, cy, cx + rInner, cy);
+                p.lineTo(cx + rOuter, cy);
+                p.quadTo(cx, cy, cx, cy + rInner);
+                p.lineTo(cx, cy + rOuter);
+                p.quadTo(cx, cy, cx - rInner, cy);
+                p.lineTo(cx - rOuter, cy);
+                p.quadTo(cx, cy, cx, cy - rInner);
+                p.closePath();
+
+                g2.fill(p);
+                g2.dispose();
+            }
+
+            @Override public int getIconWidth() { return size; }
+            @Override public int getIconHeight() { return size; }
+        };
+    }
 }
+

@@ -3,6 +3,7 @@ package network;
 import dto.LoginDTO;
 import model.Request;
 import model.Response;
+import model.Transaction;
 import protocol.Command;
 import protocol.Status;
 import util.JsonUtil;
@@ -10,6 +11,8 @@ import util.JsonUtil;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Socket Client for communicating with NexBank Load Balancer (port 9000)
@@ -91,6 +94,41 @@ public class SocketClient {
         request.setPayload(payloadJson);
 
         return send(request);
+    }
+
+    /**
+     * Lấy danh sách giao dịch gần đây từ Backend.
+     */
+    public List<Transaction> getRecentTransactions(String accountId) {
+        List<Transaction> list = new ArrayList<>();
+        if (accountId == null || accountId.trim().isEmpty()) {
+            return list;
+        }
+
+        Request request = new Request(Command.GET_TRANSACTIONS, accountId);
+        request.setAccountId(accountId);
+        request.setPayload(accountId);
+        Response response = send(request);
+
+        if (response != null && response.getStatus() == Status.SUCCESS && response.getData() != null) {
+            String json = response.getData().trim();
+            if (json.startsWith("[") && json.endsWith("]")) {
+                json = json.substring(1, json.length() - 1).trim();
+                if (!json.isEmpty()) {
+                    String[] items = json.split("(?<=\\}),\\s*(?=\\{)");
+                    for (String item : items) {
+                        try {
+                            Transaction tx = JsonUtil.fromJson(item, Transaction.class);
+                            if (tx != null) {
+                                list.add(tx);
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     private Response executeSocketCall(String targetHost, int targetPort, Request request) throws IOException {

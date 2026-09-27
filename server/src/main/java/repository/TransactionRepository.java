@@ -30,4 +30,43 @@ public class TransactionRepository {
             return ps.executeUpdate() > 0;
         }
     }
+
+    /**
+     * Lấy danh sách giao dịch gần nhất của tài khoản (gửi hoặc nhận).
+     */
+    public java.util.List<Transaction> findRecentByAccount(String accountId, int limit) {
+        java.util.List<Transaction> list = new java.util.ArrayList<>();
+        if (accountId == null || accountId.trim().isEmpty()) {
+            return list;
+        }
+
+        String sql = "SELECT * FROM transactions WHERE from_account = ? OR to_account = ? ORDER BY created_at DESC LIMIT ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, accountId);
+            ps.setString(2, accountId);
+            ps.setInt(3, limit > 0 ? limit : 10);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Transaction tx = new Transaction();
+                    tx.setTransactionId(rs.getString("transaction_id"));
+                    tx.setFromAccount(rs.getString("from_account"));
+                    tx.setToAccount(rs.getString("to_account"));
+                    tx.setAmount(rs.getBigDecimal("amount"));
+                    tx.setTransactionType(rs.getString("transaction_type"));
+                    tx.setStatus(rs.getString("status"));
+                    tx.setDescription(rs.getString("description"));
+                    Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) {
+                        tx.setCreatedAt(ts.toLocalDateTime());
+                    }
+                    list.add(tx);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi truy vấn lịch sử giao dịch: " + e.getMessage());
+        }
+        return list;
+    }
 }

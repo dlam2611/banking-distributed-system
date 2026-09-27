@@ -3,16 +3,20 @@ import handler.RegisterHandler;
 import handler.TransferHandler;
 import model.Request;
 import model.Response;
+import model.Transaction;
 import network.MessageReader;
 import network.MessageWriter;
 import protocol.Command;
 import protocol.Status;
+import repository.TransactionRepository;
 import service.AccountService;
 import service.TransferService;
+import util.JsonUtil;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,11 +24,11 @@ public class BankServer {
 
     private static final AccountService accountService = new AccountService();
     private static final TransferService transferService = new TransferService();
+    private static final TransactionRepository transactionRepository = new TransactionRepository();
 
     private static final RegisterHandler registerHandler = new RegisterHandler(accountService);
     private static final LoginHandler loginHandler = new LoginHandler(accountService);
     private static final TransferHandler transferHandler = new TransferHandler(transferService);
-
     public static void main(String[] args) {
         String serverId = args.length > 0 ? args[0] : "server-1";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 8080;
@@ -75,6 +79,22 @@ public class BankServer {
 
                     case TRANSFER:
                         response = transferHandler.handle(request, serverId);
+                        break;
+
+                    case GET_TRANSACTIONS:
+                        String targetAcc = request.getAccountId();
+                        if (targetAcc == null || targetAcc.trim().isEmpty()) {
+                            targetAcc = request.getPayload();
+                        }
+                        List<Transaction> txList = transactionRepository.findRecentByAccount(targetAcc, 10);
+                        StringBuilder sb = new StringBuilder("[");
+                        for (int i = 0; i < txList.size(); i++) {
+                            if (i > 0) sb.append(",");
+                            sb.append(JsonUtil.toJson(txList.get(i)));
+                        }
+                        sb.append("]");
+                        response = Response.success(request.getRequestId(), "Thành công", sb.toString());
+                        response.setServerNodeId(serverId);
                         break;
 
                     case PING:

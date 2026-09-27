@@ -5,6 +5,7 @@ public enum Command {
     LOGIN,
     LOGOUT,
     TRANSFER,
+    GET_TRANSACTIONS,
     PING;
 
     public static Command fromString(String text) {

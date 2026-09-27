@@ -114,7 +114,7 @@ public class AuthController {
                     loginFrame.getLoginButton().setText("Đăng nhập an toàn");
 
                     if (response != null && response.getStatus() == Status.SUCCESS) {
-                        // Đăng nhập THÀNH CÔNG
+                        // Đăng nhập THÀNH CÔNG -> Vào thẳng Trang chủ ngay lập tức
                         Account account = null;
                         if (response.getData() != null && !response.getData().isEmpty()) {
                             try {
@@ -123,28 +123,8 @@ public class AuthController {
                             }
                         }
 
-                        StringBuilder successMsg = new StringBuilder();
-                        successMsg.append("🎉 ĐĂNG NHẬP THÀNH CÔNG!\n\n");
-                        if (account != null) {
-                            successMsg.append("• Họ và tên: ").append(account.getFullName() != null ? account.getFullName() : "N/A").append("\n");
-                            successMsg.append("• Số tài khoản: ").append(account.getAccountId() != null ? account.getAccountId() : "N/A").append("\n");
-                            successMsg.append("• Số CCCD: ").append(account.getCccd() != null ? account.getCccd() : cccd).append("\n");
-                            if (account.getBalance() != null) {
-                                successMsg.append("• Số dư hiện tại: ").append(String.format("%,.0f VND", account.getBalance())).append("\n");
-                            }
-                        }
-                        if (response.getServerNodeId() != null) {
-                            successMsg.append("• Nút xử lý (Node): ").append(response.getServerNodeId()).append("\n");
-                        }
-                        if (remember) {
-                            successMsg.append("• Trạng thái: Đã lưu phiên đăng nhập bảo mật\n");
-                        }
-                        successMsg.append("\n(Hệ thống xác thực thành công - Tạm thời chưa điều hướng)");
-
-                        JOptionPane.showMessageDialog(loginFrame,
-                                successMsg.toString(),
-                                "NexBank Core - Đăng nhập thành công",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        loginFrame.dispose();
+                        new ui.HomeFrame(account).setVisible(true);
 
                     } else {
                         // Đăng nhập THẤT BẠI
