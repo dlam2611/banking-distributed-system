@@ -1,5 +1,8 @@
 package util;
 
+import dto.LoginDTO;
+import dto.RegisterDTO;
+import dto.TransferDTO;
 import model.Account;
 import model.Request;
 import model.Response;
@@ -9,10 +12,14 @@ import protocol.MessageType;
 import protocol.Status;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class JsonUtil {
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private JsonUtil() {}
 
@@ -26,10 +33,6 @@ public final class JsonUtil {
             appendField(sb, "messageType", r.getMessageType() != null ? r.getMessageType().name() : null, false);
             appendField(sb, "command", r.getCommand() != null ? r.getCommand().name() : null, false);
             appendField(sb, "accountId", r.getAccountId(), false);
-            appendField(sb, "targetAccountId", r.getTargetAccountId(), false);
-            appendField(sb, "amount", r.getAmount() != null ? r.getAmount().toPlainString() : null, false);
-            appendField(sb, "username", r.getUsername(), false);
-            appendField(sb, "password", r.getPassword(), false);
             appendField(sb, "payload", r.getPayload(), false);
             sb.append(",\"timestamp\":").append(r.getTimestamp());
             sb.append("}");
@@ -54,10 +57,14 @@ public final class JsonUtil {
             Account a = (Account) obj;
             StringBuilder sb = new StringBuilder("{");
             appendField(sb, "accountId", a.getAccountId(), true);
-            appendField(sb, "accountNumber", a.getAccountNumber(), false);
-            appendField(sb, "ownerName", a.getOwnerName(), false);
+            appendField(sb, "fullName", a.getFullName(), false);
+            appendField(sb, "cccd", a.getCccd(), false);
+            appendField(sb, "phone", a.getPhone(), false);
+            appendField(sb, "password", a.getPassword(), false);
+            appendField(sb, "pin", a.getPin(), false);
             appendField(sb, "balance", a.getBalance() != null ? a.getBalance().toPlainString() : "0", false);
             appendField(sb, "status", a.getStatus(), false);
+            appendField(sb, "createdAt", a.getCreatedAt() != null ? a.getCreatedAt().format(DATE_TIME_FORMATTER) : null, false);
             sb.append("}");
             return sb.toString();
         }
@@ -66,13 +73,46 @@ public final class JsonUtil {
             Transaction t = (Transaction) obj;
             StringBuilder sb = new StringBuilder("{");
             appendField(sb, "transactionId", t.getTransactionId(), true);
-            appendField(sb, "sourceAccountId", t.getSourceAccountId(), false);
-            appendField(sb, "targetAccountId", t.getTargetAccountId(), false);
-            appendField(sb, "transactionType", t.getTransactionType(), false);
+            appendField(sb, "fromAccount", t.getFromAccount(), false);
+            appendField(sb, "toAccount", t.getToAccount(), false);
             appendField(sb, "amount", t.getAmount() != null ? t.getAmount().toPlainString() : "0", false);
+            appendField(sb, "transactionType", t.getTransactionType(), false);
             appendField(sb, "status", t.getStatus(), false);
             appendField(sb, "description", t.getDescription(), false);
-            sb.append(",\"timestamp\":").append(t.getTimestamp());
+            appendField(sb, "createdAt", t.getCreatedAt() != null ? t.getCreatedAt().format(DATE_TIME_FORMATTER) : null, false);
+            sb.append("}");
+            return sb.toString();
+        }
+
+        if (obj instanceof LoginDTO) {
+            LoginDTO d = (LoginDTO) obj;
+            StringBuilder sb = new StringBuilder("{");
+            appendField(sb, "cccd", d.getCccd(), true);
+            appendField(sb, "password", d.getPassword(), false);
+            sb.append("}");
+            return sb.toString();
+        }
+
+        if (obj instanceof RegisterDTO) {
+            RegisterDTO d = (RegisterDTO) obj;
+            StringBuilder sb = new StringBuilder("{");
+            appendField(sb, "accountId", d.getAccountId(), true);
+            appendField(sb, "fullName", d.getFullName(), false);
+            appendField(sb, "cccd", d.getCccd(), false);
+            appendField(sb, "phone", d.getPhone(), false);
+            appendField(sb, "password", d.getPassword(), false);
+            appendField(sb, "pin", d.getPin(), false);
+            sb.append("}");
+            return sb.toString();
+        }
+
+        if (obj instanceof TransferDTO) {
+            TransferDTO d = (TransferDTO) obj;
+            StringBuilder sb = new StringBuilder("{");
+            appendField(sb, "toAccount", d.getToAccount(), true);
+            appendField(sb, "amount", d.getAmount() != null ? d.getAmount().toPlainString() : "0", false);
+            appendField(sb, "pin", d.getPin(), false);
+            appendField(sb, "description", d.getDescription(), false);
             sb.append("}");
             return sb.toString();
         }
@@ -104,14 +144,6 @@ public final class JsonUtil {
             r.setMessageType(MessageType.fromString(map.get("messageType")));
             r.setCommand(Command.fromString(map.get("command")));
             r.setAccountId(map.get("accountId"));
-            r.setTargetAccountId(map.get("targetAccountId"));
-            if (map.get("amount") != null) {
-                try {
-                    r.setAmount(new BigDecimal(map.get("amount")));
-                } catch (Exception ignored) {}
-            }
-            r.setUsername(map.get("username"));
-            r.setPassword(map.get("password"));
             r.setPayload(map.get("payload"));
             if (map.get("timestamp") != null) {
                 try {
@@ -140,36 +172,75 @@ public final class JsonUtil {
         if (clazz.equals(Account.class)) {
             Account a = new Account();
             a.setAccountId(map.get("accountId"));
-            a.setAccountNumber(map.get("accountNumber"));
-            a.setOwnerName(map.get("ownerName"));
+            a.setFullName(map.get("fullName"));
+            a.setCccd(map.get("cccd"));
+            a.setPhone(map.get("phone"));
+            a.setPassword(map.get("password"));
+            a.setPin(map.get("pin"));
             if (map.get("balance") != null) {
                 try {
                     a.setBalance(new BigDecimal(map.get("balance")));
                 } catch (Exception ignored) {}
             }
             a.setStatus(map.get("status"));
+            if (map.get("createdAt") != null) {
+                try {
+                    a.setCreatedAt(LocalDateTime.parse(map.get("createdAt"), DATE_TIME_FORMATTER));
+                } catch (Exception ignored) {}
+            }
             return clazz.cast(a);
         }
 
         if (clazz.equals(Transaction.class)) {
             Transaction t = new Transaction();
             t.setTransactionId(map.get("transactionId"));
-            t.setSourceAccountId(map.get("sourceAccountId"));
-            t.setTargetAccountId(map.get("targetAccountId"));
-            t.setTransactionType(map.get("transactionType"));
+            t.setFromAccount(map.get("fromAccount"));
+            t.setToAccount(map.get("toAccount"));
             if (map.get("amount") != null) {
                 try {
                     t.setAmount(new BigDecimal(map.get("amount")));
                 } catch (Exception ignored) {}
             }
+            t.setTransactionType(map.get("transactionType"));
             t.setStatus(map.get("status"));
             t.setDescription(map.get("description"));
-            if (map.get("timestamp") != null) {
+            if (map.get("createdAt") != null) {
                 try {
-                    t.setTimestamp(Long.parseLong(map.get("timestamp")));
+                    t.setCreatedAt(LocalDateTime.parse(map.get("createdAt"), DATE_TIME_FORMATTER));
                 } catch (Exception ignored) {}
             }
             return clazz.cast(t);
+        }
+
+        if (clazz.equals(LoginDTO.class)) {
+            LoginDTO d = new LoginDTO();
+            d.setCccd(map.get("cccd"));
+            d.setPassword(map.get("password"));
+            return clazz.cast(d);
+        }
+
+        if (clazz.equals(RegisterDTO.class)) {
+            RegisterDTO d = new RegisterDTO();
+            d.setAccountId(map.get("accountId"));
+            d.setFullName(map.get("fullName"));
+            d.setCccd(map.get("cccd"));
+            d.setPhone(map.get("phone"));
+            d.setPassword(map.get("password"));
+            d.setPin(map.get("pin"));
+            return clazz.cast(d);
+        }
+
+        if (clazz.equals(TransferDTO.class)) {
+            TransferDTO d = new TransferDTO();
+            d.setToAccount(map.get("toAccount"));
+            if (map.get("amount") != null) {
+                try {
+                    d.setAmount(new BigDecimal(map.get("amount")));
+                } catch (Exception ignored) {}
+            }
+            d.setPin(map.get("pin"));
+            d.setDescription(map.get("description"));
+            return clazz.cast(d);
         }
 
         return null;

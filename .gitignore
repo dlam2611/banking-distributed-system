@@ -1,0 +1,8 @@
+# Ignore docker-compose file containing credentials
+docker-compose.yml
+
+# IDE & Build files
+target/
+.idea/
+*.iml
+*.class

@@ -1,13 +1,10 @@
 package protocol;
 
 public enum Command {
+    REGISTER,
     LOGIN,
     LOGOUT,
-    BALANCE,
-    DEPOSIT,
-    WITHDRAW,
     TRANSFER,
-    TRANSACTION_HISTORY,
     PING;
 
     public static Command fromString(String text) {

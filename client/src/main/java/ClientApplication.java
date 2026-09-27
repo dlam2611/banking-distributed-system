@@ -34,7 +34,7 @@ public class ClientApplication {
                 String text = input.trim();
                 if (text.isEmpty()) continue;
 
-                Request request = new Request(Command.BALANCE, text);
+                Request request = new Request(Command.TRANSFER, text);
                 request.setPayload(text);
 
                 writer.writeRequest(request);

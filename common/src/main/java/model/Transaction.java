@@ -2,33 +2,36 @@ package model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class Transaction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String transactionId;
-    private String sourceAccountId;
-    private String targetAccountId;
-    private String transactionType;
+    private String fromAccount;
+    private String toAccount;
     private BigDecimal amount;
-    private long timestamp;
+    private String transactionType;
     private String status;
     private String description;
+    private LocalDateTime createdAt;
 
     public Transaction() {
-        this.timestamp = System.currentTimeMillis();
+        this.status = "SUCCESS";
+        this.createdAt = LocalDateTime.now();
     }
 
-    public Transaction(String transactionId, String sourceAccountId, String targetAccountId,
-                       String transactionType, BigDecimal amount, String status, String description) {
+    public Transaction(String transactionId, String fromAccount, String toAccount,
+                       BigDecimal amount, String transactionType, String status,
+                       String description, LocalDateTime createdAt) {
         this.transactionId = transactionId;
-        this.sourceAccountId = sourceAccountId;
-        this.targetAccountId = targetAccountId;
-        this.transactionType = transactionType;
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
         this.amount = amount;
-        this.timestamp = System.currentTimeMillis();
-        this.status = status;
+        this.transactionType = transactionType;
+        this.status = status != null ? status : "SUCCESS";
         this.description = description;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
     }
 
     public String getTransactionId() {
@@ -39,28 +42,20 @@ public class Transaction implements Serializable {
         this.transactionId = transactionId;
     }
 
-    public String getSourceAccountId() {
-        return sourceAccountId;
+    public String getFromAccount() {
+        return fromAccount;
     }
 
-    public void setSourceAccountId(String sourceAccountId) {
-        this.sourceAccountId = sourceAccountId;
+    public void setFromAccount(String fromAccount) {
+        this.fromAccount = fromAccount;
     }
 
-    public String getTargetAccountId() {
-        return targetAccountId;
+    public String getToAccount() {
+        return toAccount;
     }
 
-    public void setTargetAccountId(String targetAccountId) {
-        this.targetAccountId = targetAccountId;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
+    public void setToAccount(String toAccount) {
+        this.toAccount = toAccount;
     }
 
     public BigDecimal getAmount() {
@@ -71,12 +66,12 @@ public class Transaction implements Serializable {
         this.amount = amount;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getTransactionType() {
+        return transactionType;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
     public String getStatus() {
@@ -95,17 +90,25 @@ public class Transaction implements Serializable {
         this.description = description;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "Transaction{" +
                 "transactionId='" + transactionId + '\'' +
-                ", sourceAccountId='" + sourceAccountId + '\'' +
-                ", targetAccountId='" + targetAccountId + '\'' +
-                ", transactionType='" + transactionType + '\'' +
+                ", fromAccount='" + fromAccount + '\'' +
+                ", toAccount='" + toAccount + '\'' +
                 ", amount=" + amount +
-                ", timestamp=" + timestamp +
+                ", transactionType='" + transactionType + '\'' +
                 ", status='" + status + '\'' +
                 ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }
