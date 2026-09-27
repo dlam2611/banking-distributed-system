@@ -6,19 +6,14 @@ import protocol.MessageType;
 import java.io.Serializable;
 import java.util.UUID;
 
-/**
- * Envelope Request dùng chung qua Socket.
- * Load Balancer chỉ cần đọc command và accountId để định tuyến (Consistent Hashing).
- * Dữ liệu chi tiết của từng nghiệp vụ nằm trong payload (chuỗi JSON).
- */
 public class Request implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String requestId;
     private MessageType messageType;
     private Command command;
-    private String accountId;   // Routing key cho Load Balancer
-    private String payload;     // Chuỗi JSON chứa DTO nghiệp vụ tương ứng
+    private String accountId;
+    private String payload;
     private long timestamp;
 
     public Request() {

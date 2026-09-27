@@ -112,7 +112,7 @@ public class BankServer {
                         response = Response.success(request.getRequestId(), "Đăng xuất thành công!", null);
                         response.setServerNodeId(serverId);
                         writer.writeResponse(response);
-                        return; // Đóng session client
+                        return;
 
                     default:
                         response = Response.error(request.getRequestId(), Status.INVALID_INPUT, "Lệnh không được hỗ trợ: " + request.getCommand());

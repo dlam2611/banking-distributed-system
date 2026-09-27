@@ -13,9 +13,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-/**
- * Controller xử lý logic Đăng nhập và các luồng tương tác trên giao diện NexBank.
- */
 public class AuthController {
 
     private final LoginFrame loginFrame;
@@ -32,10 +29,10 @@ public class AuthController {
     }
 
     private void initHandlers() {
-        // 1. Xử lý nút "Đăng nhập an toàn →"
+
         loginFrame.getLoginButton().addActionListener(e -> performLogin());
 
-        // 2. Hỗ trợ nhấn Enter trong ô CCCD và Mật khẩu để đăng nhập nhanh
+
         KeyAdapter enterKeyAdapter = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -47,10 +44,10 @@ public class AuthController {
         loginFrame.getCccdFieldComponent().getUnderlyingField().addKeyListener(enterKeyAdapter);
         loginFrame.getPasswordFieldComponent().getUnderlyingField().addKeyListener(enterKeyAdapter);
 
-        // 3. Xử lý nút "Đăng nhập bằng Face ID / Vân tay"
+
         loginFrame.getBiometricButton().addActionListener(e -> handleBiometricLogin());
 
-        // 4. Xử lý liên kết "Quên mật khẩu?"
+
         loginFrame.getForgotPasswordLink().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -61,7 +58,7 @@ public class AuthController {
             }
         });
 
-        // 5. Xử lý liên kết "Đăng ký ngay ↗"
+
         loginFrame.getRegisterLink().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -72,15 +69,14 @@ public class AuthController {
         });
     }
 
-    /**
-     * Logic thực hiện Đăng nhập kết nối với máy chủ backend.
-     */
+
+
     private void performLogin() {
         String cccd = loginFrame.getCccd();
         String password = loginFrame.getPassword();
         boolean remember = loginFrame.isRememberMe();
 
-        // 1. Kiểm tra tính hợp lệ dữ liệu đầu vào
+
         if (cccd.isEmpty()) {
             JOptionPane.showMessageDialog(loginFrame,
                     "Vui lòng nhập Số CCCD hoặc Tên đăng nhập!",
@@ -99,22 +95,22 @@ public class AuthController {
             return;
         }
 
-        // 2. Chuyển nút sang trạng thái đang xử lý (loading)
+
         loginFrame.getLoginButton().setEnabled(false);
         loginFrame.getLoginButton().setText("Đang xác thực bảo mật...");
 
-        // 3. Gửi request đăng nhập trong luồng riêng biệt để không chặn giao diện (non-blocking UI)
+
         new Thread(() -> {
             try {
                 Response response = socketClient.login(cccd, password);
 
                 SwingUtilities.invokeLater(() -> {
-                    // Khôi phục trạng thái nút bấm
+
                     loginFrame.getLoginButton().setEnabled(true);
                     loginFrame.getLoginButton().setText("Đăng nhập an toàn");
 
                     if (response != null && response.getStatus() == Status.SUCCESS) {
-                        // Đăng nhập THÀNH CÔNG -> Vào thẳng Trang chủ ngay lập tức
+
                         Account account = null;
                         if (response.getData() != null && !response.getData().isEmpty()) {
                             try {
@@ -127,7 +123,7 @@ public class AuthController {
                         new ui.HomeFrame(account).setVisible(true);
 
                     } else {
-                        // Đăng nhập THẤT BẠI
+
                         String errMsg = (response != null && response.getMessage() != null)
                                 ? response.getMessage()
                                 : "Đăng nhập không thành công. Vui lòng thử lại!";

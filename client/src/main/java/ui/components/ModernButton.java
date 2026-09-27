@@ -11,10 +11,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import javax.swing.JButton;
 
-/**
- * Standard Modern Button for NexBank Digital Core.
- * Reusable across all application screens with consistent styling.
- */
 public class ModernButton extends JButton {
 
     public enum ButtonType {
@@ -150,17 +146,17 @@ public class ModernButton extends JButton {
         int w = getWidth();
         int h = getHeight();
 
-        // Determine current background
+
         Color bg = customBg;
         if (!isEnabled()) {
-            bg = new Color(203, 213, 225); // Disabled slate
+            bg = new Color(203, 213, 225);
         } else if (isPressed) {
             bg = customPressedBg;
         } else if (isHovered) {
             bg = customHoverBg;
         }
 
-        // Draw background
+
         if (type != ButtonType.TEXT_LINK) {
             g2.setColor(bg);
             g2.fillRoundRect(0, 0, w, h, cornerRadius, cornerRadius);
@@ -171,7 +167,7 @@ public class ModernButton extends JButton {
             }
         }
 
-        // Calculate text and icon layout
+
         g2.setFont(getFont());
         g2.setColor(isEnabled() ? customTextColor : Theme.TEXT_MUTED);
 
@@ -186,19 +182,19 @@ public class ModernButton extends JButton {
         int startX = (w - totalContentW) / 2;
         int curX = startX;
 
-        // Draw Left Icon
+
         if (getIcon() != null) {
             int iconY = (h - getIcon().getIconHeight()) / 2;
             getIcon().paintIcon(this, g2, curX, iconY);
             curX += leftIconW;
         }
 
-        // Draw Text
+
         int textY = (h + textH) / 2 - 2;
         g2.drawString(text, curX, textY);
         curX += textW;
 
-        // Draw Right Icon
+
         if (rightIcon != null) {
             curX += 8;
             int rightIconY = (h - rightIcon.getIconHeight()) / 2;

@@ -17,9 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-/**
- * Modern Rounded Password Field with lock icon, eye toggle, and focus highlight.
- */
 public class ModernPasswordField extends JPanel {
 
     private final JPasswordField passwordField;
@@ -37,11 +34,11 @@ public class ModernPasswordField extends JPanel {
         setPreferredSize(new Dimension(320, 48));
         setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 12));
 
-        // Left Icon
+
         leftIconLabel = new JLabel(leftIcon);
         add(leftIconLabel, BorderLayout.WEST);
 
-        // Core Password Field
+
         passwordField = new JPasswordField() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -67,7 +64,7 @@ public class ModernPasswordField extends JPanel {
 
         add(passwordField, BorderLayout.CENTER);
 
-        // Eye Button (show/hide password)
+
         eyeButton = new JLabel(VectorIcons.createEyeIcon(18, Theme.TEXT_MUTED, false));
         eyeButton.setCursor(Theme.HAND_CURSOR);
         eyeButton.addMouseListener(new MouseAdapter() {
@@ -85,7 +82,7 @@ public class ModernPasswordField extends JPanel {
         });
         add(eyeButton, BorderLayout.EAST);
 
-        // Focus listener
+
         passwordField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -100,7 +97,7 @@ public class ModernPasswordField extends JPanel {
             }
         });
 
-        // Click forwarder
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -133,11 +130,11 @@ public class ModernPasswordField extends JPanel {
         int w = getWidth();
         int h = getHeight();
 
-        // Background
+
         g2.setColor(Theme.INPUT_BG);
         g2.fillRoundRect(0, 0, w, h, Theme.RADIUS_INPUT, Theme.RADIUS_INPUT);
 
-        // Border
+
         if (isFocused) {
             g2.setColor(Theme.PRIMARY);
             g2.setStroke(new BasicStroke(1.8f));

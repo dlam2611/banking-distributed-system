@@ -38,17 +38,12 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-/**
- * Giao diện Đăng ký tài khoản NexBank Digital Core chuẩn 2 bước:
- * - Bước 1: Thông tin cá nhân (Họ tên, CCCD, Số điện thoại, Mật khẩu)
- * - Bước 2: Thông tin tài khoản (Số tài khoản mong muốn, Mã PIN giao dịch 6 số)
- */
 public class RegisterFrame extends JFrame {
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cardsContainer = new JPanel(cardLayout);
 
-    // === Bước 1: Thông tin cá nhân ===
+
     private ModernTextField fullNameField;
     private ModernTextField cccdField;
     private ModernTextField phoneField;
@@ -57,7 +52,7 @@ public class RegisterFrame extends JFrame {
     private ModernButton nextStepButton;
     private JLabel backToLoginLink1;
 
-    // === Bước 2: Thông tin tài khoản ===
+
     private ModernTextField accountIdField;
     private ModernPasswordField pinField;
     private ModernPasswordField confirmPinField;
@@ -81,12 +76,12 @@ public class RegisterFrame extends JFrame {
     }
 
     private void initUI() {
-        // Container CardLayout chứa Bước 1 và Bước 2
+
         cardsContainer.setOpaque(false);
         cardsContainer.add(createStep1Wrapper(), "STEP_1");
         cardsContainer.add(createStep2Wrapper(), "STEP_2");
 
-        // Bọc trong JScrollPane cuộn mượt
+
         JScrollPane scrollPane = new JScrollPane(cardsContainer);
         scrollPane.setBorder(null);
         scrollPane.setBackground(Theme.BACKGROUND);
@@ -108,19 +103,19 @@ public class RegisterFrame extends JFrame {
         content.setPreferredSize(new Dimension(380, 780));
         content.setMaximumSize(new Dimension(380, 780));
 
-        // 1. Stepper Header: BƯỚC 1 TRÊN 2 | Bảo mật cấp cao
+
         content.add(createStepperHeader(1, "1. Thông tin cá nhân", "2. Thông tin tài khoản"));
         content.add(Box.createVerticalStrut(14));
 
-        // 2. Tiêu đề + Icon ngân hàng
+
         content.add(createTitleSection("Mở tài khoản số", "Nhận ngay tài khoản số đẹp miễn phí chỉ trong 2 phút."));
         content.add(Box.createVerticalStrut(12));
 
-        // 3. Lightning Pill Badge
+
         content.add(createFeaturePill("Định danh tự động 24/7 không cần đến quầy"));
         content.add(Box.createVerticalStrut(14));
 
-        // 4. White Card Panel chứa các ô nhập
+
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(18, 18, 20, 18));
@@ -128,7 +123,7 @@ public class RegisterFrame extends JFrame {
         card.setMaximumSize(new Dimension(380, 560));
         card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Họ và tên
+
         card.add(createFieldLabel("HỌ VÀ TÊN (THEO CCCD)"));
         card.add(Box.createVerticalStrut(5));
         fullNameField = new ModernTextField("NGUYEN VAN AN", VectorIcons.createUserIcon(17, Theme.TEXT_MUTED));
@@ -138,7 +133,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(12));
 
-        // Số CCCD
+
         card.add(createFieldLabel("SỐ CCCD / CMND (12 CHỮ SỐ)"));
         card.add(Box.createVerticalStrut(5));
         cccdField = new ModernTextField("001203001234", VectorIcons.createCardIcon(17, Theme.TEXT_MUTED));
@@ -148,7 +143,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(12));
 
-        // Số điện thoại
+
         card.add(createFieldLabel("SỐ ĐIỆN THOẠI NHẬN OTP"));
         card.add(Box.createVerticalStrut(5));
         phoneField = new ModernTextField("0912345678", VectorIcons.createPhoneIcon(16, Theme.TEXT_MUTED));
@@ -158,7 +153,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(12));
 
-        // Mật khẩu đăng nhập
+
         JPanel passLabelRow = new JPanel(new BorderLayout());
         passLabelRow.setOpaque(false);
         passLabelRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -181,7 +176,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(14));
 
-        // Security Alert Note
+
         AlertBox securityAlert = new AlertBox(
                 "Mã hoá bảo mật 256-bit chuẩn PCI-DSS",
                 "Thông tin được bảo mật tuyệt đối theo quy định Ngân hàng Nhà nước."
@@ -192,7 +187,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(10));
 
-        // Checkbox Terms
+
         termsCheckBox = new ModernCheckBox("Tôi xác nhận thông tin trên là chính xác và đồng ý với điều khoản");
         termsCheckBox.setSelected(true);
         termsCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -201,7 +196,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(14));
 
-        // Nút tiếp tục bước 2
+
         nextStepButton = ModernButton.createPrimary("Tiếp tục: Thông tin tài khoản");
         nextStepButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         nextStepButton.setMaximumSize(new Dimension(344, 46));
@@ -210,7 +205,7 @@ public class RegisterFrame extends JFrame {
         content.add(card);
         content.add(Box.createVerticalStrut(12));
 
-        // Footer: Đã có tài khoản? Đăng nhập ngay
+
         backToLoginLink1 = new JLabel("Đã có tài khoản NexBank? Đăng nhập ngay");
         backToLoginLink1.setFont(Theme.CAPTION_FONT);
         backToLoginLink1.setForeground(Theme.PRIMARY);
@@ -232,19 +227,19 @@ public class RegisterFrame extends JFrame {
         content.setPreferredSize(new Dimension(380, 780));
         content.setMaximumSize(new Dimension(380, 780));
 
-        // 1. Stepper Header: BƯỚC 2 TRÊN 2
+
         content.add(createStepperHeader(2, "✓ Thông tin cá nhân", "2. Thông tin tài khoản"));
         content.add(Box.createVerticalStrut(14));
 
-        // 2. Tiêu đề
+
         content.add(createTitleSection("Thiết lập tài khoản", "Chọn số tài khoản yêu thích và cài đặt mã PIN bảo mật."));
         content.add(Box.createVerticalStrut(12));
 
-        // 3. Feature Pill
+
         content.add(createFeaturePill("Miễn phí chọn số tài khoản đẹp, lộc phát tự chọn"));
         content.add(Box.createVerticalStrut(14));
 
-        // 4. White Card Form Bước 2
+
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(18, 18, 20, 18));
@@ -252,7 +247,7 @@ public class RegisterFrame extends JFrame {
         card.setMaximumSize(new Dimension(380, 560));
         card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Số tài khoản mong muốn
+
         JPanel accRow = new JPanel(new BorderLayout());
         accRow.setOpaque(false);
         accRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -275,7 +270,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(6));
 
-        // 3 Nút gợi ý số tài khoản
+
         JPanel quickButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         quickButtons.setOpaque(false);
         quickButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -306,7 +301,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(12));
 
-        // Mã PIN giao dịch 6 số
+
         JPanel pinRow = new JPanel(new BorderLayout());
         pinRow.setOpaque(false);
         pinRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -329,7 +324,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(12));
 
-        // Xác nhận lại Mã PIN
+
         card.add(createFieldLabel("XÁC NHẬN LẠI MÃ PIN (6 SỐ)"));
         card.add(Box.createVerticalStrut(5));
         confirmPinField = new ModernPasswordField("Nhập lại 6 chữ số mã PIN", VectorIcons.createLockIcon(16, Theme.TEXT_MUTED));
@@ -339,7 +334,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(14));
 
-        // Alert cảnh báo bảo mật mã PIN
+
         AlertBox pinAlert = new AlertBox(
                 "Bảo mật mã PIN giao dịch",
                 "Mã PIN dùng để xác thực khi chuyển tiền. Tuyệt đối không chia sẻ cho bất kỳ ai!"
@@ -350,7 +345,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(14));
 
-        // Nút Hoàn tất đăng ký
+
         submitRegisterButton = ModernButton.createPrimary("Hoàn tất mở tài khoản");
         submitRegisterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitRegisterButton.setMaximumSize(new Dimension(344, 46));
@@ -358,7 +353,7 @@ public class RegisterFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(8));
 
-        // Nút Quay lại Bước 1
+
         backToStep1Button = ModernButton.createSecondary("← Quay lại bước 1");
         backToStep1Button.setAlignmentX(Component.CENTER_ALIGNMENT);
         backToStep1Button.setMaximumSize(new Dimension(344, 42));
@@ -367,7 +362,7 @@ public class RegisterFrame extends JFrame {
         content.add(card);
         content.add(Box.createVerticalStrut(12));
 
-        // Footer Link
+
         backToLoginLink2 = new JLabel("Đã có tài khoản NexBank? Đăng nhập ngay");
         backToLoginLink2.setFont(Theme.CAPTION_FONT);
         backToLoginLink2.setForeground(Theme.PRIMARY);
@@ -379,9 +374,8 @@ public class RegisterFrame extends JFrame {
         return wrapper;
     }
 
-    /**
-     * Stepper Header với 2 thanh tiến trình và nhãn từng bước.
-     */
+
+
     private JPanel createStepperHeader(int step, String label1, String label2) {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
@@ -390,7 +384,7 @@ public class RegisterFrame extends JFrame {
         header.setPreferredSize(new Dimension(380, 56));
         header.setMaximumSize(new Dimension(380, 56));
 
-        // Top Row: "BƯỚC X TRÊN 2" | "🛡️ Bảo mật cấp cao"
+
         JPanel topRow = new JPanel(new BorderLayout());
         topRow.setOpaque(false);
         topRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -410,7 +404,7 @@ public class RegisterFrame extends JFrame {
 
         header.add(Box.createVerticalStrut(6));
 
-        // Progress Bar segments (2 segments)
+
         JPanel barsRow = new JPanel(new GridLayout(1, 2, 8, 0));
         barsRow.setOpaque(false);
         barsRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -425,7 +419,7 @@ public class RegisterFrame extends JFrame {
 
         header.add(Box.createVerticalStrut(5));
 
-        // Step text labels
+
         JPanel labelRow = new JPanel(new BorderLayout());
         labelRow.setOpaque(false);
         labelRow.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -459,9 +453,8 @@ public class RegisterFrame extends JFrame {
         };
     }
 
-    /**
-     * Tiêu đề chính + Icon ngân hàng tròn.
-     */
+
+
     private JPanel createTitleSection(String title, String subtitle) {
         JPanel section = new JPanel(new BorderLayout(12, 0));
         section.setOpaque(false);
@@ -487,13 +480,13 @@ public class RegisterFrame extends JFrame {
 
         section.add(textCol, BorderLayout.CENTER);
 
-        // Circular Bank Badge (🏛)
+
         JPanel bankBadge = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 Theme.applyQualityRendering(g2);
-                g2.setColor(new Color(235, 243, 254)); // #EBF3FE
+                g2.setColor(new Color(235, 243, 254));
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.dispose();
                 super.paintComponent(g);
@@ -510,9 +503,8 @@ public class RegisterFrame extends JFrame {
         return section;
     }
 
-    /**
-     * Pill badge nhỏ có icon tia sét (⚡).
-     */
+
+
     private JPanel createFeaturePill(String text) {
         JPanel pill = new JPanel() {
             @Override
@@ -532,7 +524,7 @@ public class RegisterFrame extends JFrame {
         JLabel icon = new JLabel(VectorIcons.createLightningIcon(13, Theme.ACCENT_TEAL));
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 10));
-        lbl.setForeground(new Color(3, 105, 161)); // #0369A1
+        lbl.setForeground(new Color(3, 105, 161));
 
         pill.add(icon);
         pill.add(lbl);
@@ -549,7 +541,7 @@ public class RegisterFrame extends JFrame {
     private JLabel createFieldLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 11));
-        lbl.setForeground(new Color(71, 85, 105)); // #475569
+        lbl.setForeground(new Color(71, 85, 105));
         lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
         lbl.setMaximumSize(new Dimension(344, 18));
         return lbl;
@@ -566,25 +558,22 @@ public class RegisterFrame extends JFrame {
         return btn;
     }
 
-    /**
-     * ==========================================
-     * LOGIC ĐIỀU HƯỚNG & XỬ LÝ SỰ KIỆN
-     * ==========================================
-     */
+
+
     private void initEventHandlers() {
-        // Nút Bước 1 -> Bước 2
+
         nextStepButton.addActionListener(e -> handleNextToStep2());
 
-        // Nút Bước 2 -> Bước 1
+
         backToStep1Button.addActionListener(e -> {
             currentStep = 1;
             cardLayout.show(cardsContainer, "STEP_1");
         });
 
-        // Nút Hoàn tất đăng ký ở Bước 2
+
         submitRegisterButton.addActionListener(e -> handleFinalRegister());
 
-        // Quay lại màn hình Đăng nhập
+
         MouseAdapter backToLoginAction = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -598,9 +587,8 @@ public class RegisterFrame extends JFrame {
         backToLoginLink2.addMouseListener(backToLoginAction);
     }
 
-    /**
-     * Xác thực thông tin Bước 1 trước khi sang Bước 2.
-     */
+
+
     private void handleNextToStep2() {
         String fullName = fullNameField.getText().trim();
         String cccd = cccdField.getText().trim();
@@ -636,19 +624,18 @@ public class RegisterFrame extends JFrame {
             return;
         }
 
-        // Tự động gợi ý Số tài khoản = Số điện thoại nếu ô còn trống
+
         if (accountIdField.getText().trim().isEmpty() || "88886666".equals(accountIdField.getText().trim())) {
             accountIdField.setText(phone);
         }
 
-        // Chuyển sang Bước 2
+
         currentStep = 2;
         cardLayout.show(cardsContainer, "STEP_2");
     }
 
-    /**
-     * Xác thực Bước 2 và gửi request tạo tài khoản tới Server qua Socket.
-     */
+
+
     private void handleFinalRegister() {
         String accountId = accountIdField.getText().trim();
         String pin = pinField.getPasswordString().trim();
@@ -672,7 +659,7 @@ public class RegisterFrame extends JFrame {
             return;
         }
 
-        // Đóng gói DTO
+
         RegisterDTO dto = new RegisterDTO(
                 accountId,
                 fullNameField.getText().trim().toUpperCase(),
@@ -682,11 +669,11 @@ public class RegisterFrame extends JFrame {
                 pin
         );
 
-        // Hiển thị trạng thái loading
+
         submitRegisterButton.setEnabled(false);
         submitRegisterButton.setText("Đang xử lý mở tài khoản...");
 
-        // Gửi qua background thread
+
         new Thread(() -> {
             try {
                 Response response = socketClient.register(dto);
@@ -696,7 +683,7 @@ public class RegisterFrame extends JFrame {
                     submitRegisterButton.setText("Hoàn tất mở tài khoản");
 
                     if (response != null && response.getStatus() == Status.SUCCESS) {
-                        // Đăng ký thành công!
+
                         StringBuilder sb = new StringBuilder();
                         sb.append("🎉 CHÚC MỪNG BẠN ĐÃ MỞ TÀI KHOẢN THÀNH CÔNG!\n\n");
                         sb.append("• Họ và tên: ").append(dto.getFullName()).append("\n");
@@ -711,7 +698,7 @@ public class RegisterFrame extends JFrame {
                                 "Mở tài khoản thành công",
                                 JOptionPane.INFORMATION_MESSAGE);
 
-                        // Đóng RegisterFrame và mở LoginFrame với CCCD điền sẵn
+
                         dispose();
                         LoginFrame loginFrame = new LoginFrame();
                         loginFrame.getCccdFieldComponent().setText(dto.getCccd());

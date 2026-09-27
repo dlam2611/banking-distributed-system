@@ -32,11 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-/**
- * NexBank Digital Core - Modern SaaS Login UI.
- * Implements the exact design specs with deep emerald theme, rounded inputs,
- * high-security badges, and CCCD-based authentication.
- */
 public class LoginFrame extends JFrame {
 
     private ModernTextField cccdField;
@@ -59,21 +54,21 @@ public class LoginFrame extends JFrame {
     }
 
     private void initUI() {
-        // Main container panel with background color
+
         JPanel rootPanel = new JPanel();
         rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.Y_AXIS));
         rootPanel.setBackground(Theme.BACKGROUND);
         rootPanel.setBorder(BorderFactory.createEmptyBorder(24, 24, 28, 24));
 
-        // 1. Top Emblem Section (Emerald Circle + Floating Lock Badge)
+
         rootPanel.add(createHeaderEmblem());
         rootPanel.add(Box.createVerticalStrut(14));
 
-        // 2. Pill Badge ("• NEXBANK DIGITAL CORE")
+
         rootPanel.add(createPillBadge());
         rootPanel.add(Box.createVerticalStrut(12));
 
-        // 3. Welcome Title & Subtitle
+
         JLabel titleLabel = new JLabel("Chào mừng trở lại!");
         titleLabel.setFont(Theme.TITLE_FONT);
         titleLabel.setForeground(Theme.TEXT_PRIMARY);
@@ -96,7 +91,7 @@ public class LoginFrame extends JFrame {
 
         rootPanel.add(Box.createVerticalStrut(16));
 
-        // 4. High Security Alert Banner
+
         AlertBox alertBox = new AlertBox("Phiên làm việc bảo mật cao", "Kết nối mã hoá bảo vệ kép tới NexVault");
         alertBox.setAlignmentX(CENTER_ALIGNMENT);
         alertBox.setMaximumSize(new Dimension(380, 56));
@@ -104,7 +99,7 @@ public class LoginFrame extends JFrame {
 
         rootPanel.add(Box.createVerticalStrut(18));
 
-        // 5. Main Card Form (White container)
+
         CardPanel cardPanel = createFormCard();
         cardPanel.setAlignmentX(CENTER_ALIGNMENT);
         cardPanel.setMaximumSize(new Dimension(380, 390));
@@ -112,18 +107,18 @@ public class LoginFrame extends JFrame {
 
         rootPanel.add(Box.createVerticalStrut(18));
 
-        // 6. Registration Prompt Link
+
         rootPanel.add(createRegisterPrompt());
         rootPanel.add(Box.createVerticalStrut(16));
 
-        // 7. Security Certifications Line (PCI-DSS, AES-256, SBV)
+
         rootPanel.add(createComplianceBadges());
         rootPanel.add(Box.createVerticalStrut(10));
 
-        // 8. Disclaimer Text
+
         rootPanel.add(createDisclaimer());
 
-        // Wrap rootPanel in a sleek borderless JScrollPane for small screens
+
         JScrollPane scrollPane = new JScrollPane(rootPanel);
         scrollPane.setBorder(null);
         scrollPane.setBackground(Theme.BACKGROUND);
@@ -135,9 +130,8 @@ public class LoginFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Top Emerald Shield Emblem with mini floating Lock badge.
-     */
+
+
     private JPanel createHeaderEmblem() {
         JPanel emblemPanel = new JPanel() {
             @Override
@@ -148,31 +142,31 @@ public class LoginFrame extends JFrame {
                 int w = getWidth();
                 int h = getHeight();
 
-                // Main Circle: Emerald Green
+
                 int mainSize = 58;
                 int mx = (w - mainSize) / 2;
                 int my = 2;
                 g2.setColor(Theme.PRIMARY);
                 g2.fillOval(mx, my, mainSize, mainSize);
 
-                // White Shield inside main circle
+
                 Icon shieldIcon = VectorIcons.createShieldIcon(26, Color.WHITE);
                 int sx = mx + (mainSize - shieldIcon.getIconWidth()) / 2;
                 int sy = my + (mainSize - shieldIcon.getIconHeight()) / 2 - 1;
                 shieldIcon.paintIcon(this, g2, sx, sy);
 
-                // Small Lock Badge floating at bottom-right of circle
+
                 int badgeSize = 22;
                 int bx = mx + mainSize - 17;
                 int by = my + mainSize - 18;
 
-                // Badge border & fill
+
                 g2.setColor(new Color(235, 240, 247));
                 g2.fillOval(bx, by, badgeSize, badgeSize);
                 g2.setColor(Color.WHITE);
                 g2.fillOval(bx + 1, by + 1, badgeSize - 2, badgeSize - 2);
 
-                // Mini lock icon
+
                 Icon lockIcon = VectorIcons.createLockIcon(12, new Color(59, 130, 246));
                 lockIcon.paintIcon(this, g2, bx + 5, by + 5);
 
@@ -187,9 +181,8 @@ public class LoginFrame extends JFrame {
         return emblemPanel;
     }
 
-    /**
-     * Capsule Badge: "• NEXBANK DIGITAL CORE"
-     */
+
+
     private JPanel createPillBadge() {
         JPanel pill = new JPanel() {
             @Override
@@ -206,15 +199,15 @@ public class LoginFrame extends JFrame {
         pill.setLayout(new FlowLayout(FlowLayout.CENTER, 6, 4));
         pill.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
 
-        // Green bullet dot
+
         JLabel dotLabel = new JLabel("•");
         dotLabel.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 14));
         dotLabel.setForeground(Theme.PRIMARY);
 
-        // Text
+
         JLabel textLabel = new JLabel("NEXBANK DIGITAL CORE");
         textLabel.setFont(Theme.BADGE_FONT);
-        textLabel.setForeground(new Color(71, 85, 105)); // #475569
+        textLabel.setForeground(new Color(71, 85, 105));
 
         pill.add(dotLabel);
         pill.add(textLabel);
@@ -226,15 +219,14 @@ public class LoginFrame extends JFrame {
         return wrapper;
     }
 
-    /**
-     * White Main Form Card containing CCCD input, Password input, Checkbox, and Action buttons.
-     */
+
+
     private CardPanel createFormCard() {
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(20, 20, 22, 20));
 
-        // 1. Label: Số CCCD / Tên đăng nhập
+
         JLabel cccdLabel = new JLabel("Số CCCD / Tên đăng nhập");
         cccdLabel.setFont(Theme.LABEL_FONT);
         cccdLabel.setForeground(Theme.TEXT_SECONDARY);
@@ -243,16 +235,16 @@ public class LoginFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(7));
 
-        // CCCD Input Field (Replacing phone number as requested)
+
         cccdField = new ModernTextField("001203012345", VectorIcons.createUserIcon(17, Theme.TEXT_MUTED));
-        cccdField.setText("001203012345"); // Sample CCCD number matching style in mockup
+        cccdField.setText("001203012345");
         cccdField.setAlignmentX(LEFT_ALIGNMENT);
         cccdField.setMaximumSize(new Dimension(340, 46));
         card.add(cccdField);
 
         card.add(Box.createVerticalStrut(14));
 
-        // 2. Password Label Row (Label + "🔒 256-bit" security badge)
+
         JPanel passwordLabelRow = new JPanel(new BorderLayout());
         passwordLabelRow.setOpaque(false);
         passwordLabelRow.setAlignmentX(LEFT_ALIGNMENT);
@@ -263,7 +255,7 @@ public class LoginFrame extends JFrame {
         passLabel.setForeground(Theme.TEXT_SECONDARY);
         passwordLabelRow.add(passLabel, BorderLayout.WEST);
 
-        // Right side badge: Lock icon + 256-bit
+
         JPanel bitBadge = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         bitBadge.setOpaque(false);
         JLabel bitLockIcon = new JLabel(VectorIcons.createLockIcon(12, Theme.ACCENT_TEAL));
@@ -278,16 +270,16 @@ public class LoginFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(7));
 
-        // Password Input Field
+
         passwordField = new ModernPasswordField("Nhập mật khẩu của bạn", VectorIcons.createLockIcon(16, Theme.TEXT_MUTED));
-        passwordField.setText("BankSecure@2026"); // Mock password for visual fidelity
+        passwordField.setText("BankSecure@2026");
         passwordField.setAlignmentX(LEFT_ALIGNMENT);
         passwordField.setMaximumSize(new Dimension(340, 46));
         card.add(passwordField);
 
         card.add(Box.createVerticalStrut(12));
 
-        // 3. Options Row: Remember Me & Forgot Password
+
         JPanel optionsRow = new JPanel(new BorderLayout());
         optionsRow.setOpaque(false);
         optionsRow.setAlignmentX(LEFT_ALIGNMENT);
@@ -307,7 +299,7 @@ public class LoginFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(18));
 
-        // 4. Primary Button: "Đăng nhập an toàn →"
+
         loginButton = ModernButton.createPrimary("Đăng nhập an toàn");
         loginButton.setAlignmentX(LEFT_ALIGNMENT);
         loginButton.setMaximumSize(new Dimension(340, 48));
@@ -315,7 +307,7 @@ public class LoginFrame extends JFrame {
 
         card.add(Box.createVerticalStrut(10));
 
-        // 5. Secondary Button: "Đăng nhập bằng Face ID / Vân tay"
+
         biometricButton = ModernButton.createBiometric("Đăng nhập bằng Face ID / Vân tay");
         biometricButton.setAlignmentX(LEFT_ALIGNMENT);
         biometricButton.setMaximumSize(new Dimension(340, 46));
@@ -324,9 +316,8 @@ public class LoginFrame extends JFrame {
         return card;
     }
 
-    /**
-     * Registration Prompt: "Chưa có tài khoản NexBank? Đăng ký ngay ↗"
-     */
+
+
     private JPanel createRegisterPrompt() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         panel.setOpaque(false);
@@ -350,38 +341,36 @@ public class LoginFrame extends JFrame {
         return panel;
     }
 
-    /**
-     * Security and Compliance Badges:
-     * PCI-DSS LEVEL 1  •  AES-256 BIT  •  SBV COMPLIANT
-     */
+
+
     private JPanel createComplianceBadges() {
         JPanel badgesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         badgesPanel.setOpaque(false);
         badgesPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-        // Item 1: PCI-DSS LEVEL 1
+
         JPanel pciItem = createBadgeItem(
                 VectorIcons.createShieldCheckIcon(13, Theme.ACCENT_TEAL),
                 "PCI-DSS LEVEL 1"
         );
 
-        // Dot separator
+
         JLabel dot1 = new JLabel("•");
         dot1.setFont(new Font(Theme.FONT_FAMILY, Font.PLAIN, 12));
         dot1.setForeground(new Color(203, 213, 225));
 
-        // Item 2: AES-256 BIT
+
         JPanel aesItem = createBadgeItem(
                 VectorIcons.createLockIcon(12, Theme.ACCENT_TEAL),
                 "AES-256 BIT"
         );
 
-        // Dot separator
+
         JLabel dot2 = new JLabel("•");
         dot2.setFont(new Font(Theme.FONT_FAMILY, Font.PLAIN, 12));
         dot2.setForeground(new Color(203, 213, 225));
 
-        // Item 3: SBV COMPLIANT
+
         JPanel sbvItem = createBadgeItem(
                 VectorIcons.createShieldCheckIcon(13, Theme.ACCENT_TEAL),
                 "SBV COMPLIANT"
@@ -410,9 +399,8 @@ public class LoginFrame extends JFrame {
         return item;
     }
 
-    /**
-     * Real-time monitoring disclaimer.
-     */
+
+
     private JPanel createDisclaimer() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -421,7 +409,7 @@ public class LoginFrame extends JFrame {
 
         JLabel line1 = new JLabel("Mọi phiên giao dịch đều được giám sát thời gian thực");
         line1.setFont(Theme.FOOTER_FONT);
-        line1.setForeground(new Color(148, 163, 184)); // #94A3B8
+        line1.setForeground(new Color(148, 163, 184));
         line1.setAlignmentX(CENTER_ALIGNMENT);
 
         JLabel line2 = new JLabel("bởi Trung tâm Phòng ngừa Gian lận NexGuard.");
@@ -435,7 +423,7 @@ public class LoginFrame extends JFrame {
         return panel;
     }
 
-    // === Getters for Future Logic Binding ===
+
 
     public String getCccd() {
         return cccdField.getText().trim();
@@ -473,12 +461,11 @@ public class LoginFrame extends JFrame {
         return registerLink;
     }
 
-    /**
-     * Standalone main method to preview the interface and run with AuthController.
-     */
+
+
     public static void main(String[] args) {
         try {
-            // Enable native system anti-aliasing hints
+
             System.setProperty("awt.useSystemAAFontSettings", "on");
             System.setProperty("swing.aatext", "true");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

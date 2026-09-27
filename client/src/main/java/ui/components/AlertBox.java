@@ -14,9 +14,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * High-security session info banner ("Phiên làm việc bảo mật cao").
- */
 public class AlertBox extends JPanel {
 
     public AlertBox(String title, String subtitle) {
@@ -25,13 +22,13 @@ public class AlertBox extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         setPreferredSize(new Dimension(320, 56));
 
-        // Left Icon Badge
+
         JPanel iconBadge = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 Theme.applyQualityRendering(g2);
-                g2.setColor(new Color(219, 234, 254)); // #DBEAFE
+                g2.setColor(new Color(219, 234, 254));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 g2.dispose();
                 super.paintComponent(g);
@@ -49,7 +46,7 @@ public class AlertBox extends JPanel {
         westContainer.add(iconBadge, BorderLayout.NORTH);
         add(westContainer, BorderLayout.WEST);
 
-        // Text Section
+
         JPanel textPanel = new JPanel(new GridLayout(2, 1, 0, 2));
         textPanel.setOpaque(false);
 
@@ -74,11 +71,11 @@ public class AlertBox extends JPanel {
         int w = getWidth();
         int h = getHeight();
 
-        // Background
+
         g2.setColor(Theme.ALERT_BG);
         g2.fillRoundRect(0, 0, w, h, 12, 12);
 
-        // Subtle Border
+
         g2.setColor(Theme.ALERT_BORDER);
         g2.setStroke(new BasicStroke(1.0f));
         g2.drawRoundRect(0, 0, w - 1, h - 1, 12, 12);

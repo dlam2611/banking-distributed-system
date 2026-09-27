@@ -21,9 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/**
- * Modern Rounded Input Field with left icon, clear button, and focus highlight.
- */
 public class ModernTextField extends JPanel {
 
     private final JTextField textField;
@@ -39,11 +36,11 @@ public class ModernTextField extends JPanel {
         setPreferredSize(new Dimension(320, 48));
         setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 12));
 
-        // Left Icon
+
         leftIconLabel = new JLabel(leftIcon);
         add(leftIconLabel, BorderLayout.WEST);
 
-        // Core Text Field
+
         textField = new JTextField() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -67,7 +64,7 @@ public class ModernTextField extends JPanel {
 
         add(textField, BorderLayout.CENTER);
 
-        // Clear 'X' Button
+
         clearButton = new JLabel(VectorIcons.createClearIcon(16, Theme.TEXT_MUTED));
         clearButton.setCursor(Theme.HAND_CURSOR);
         clearButton.setVisible(false);
@@ -80,7 +77,7 @@ public class ModernTextField extends JPanel {
         });
         add(clearButton, BorderLayout.EAST);
 
-        // Listen for focus
+
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -95,7 +92,7 @@ public class ModernTextField extends JPanel {
             }
         });
 
-        // Listen for typing to toggle clear button
+
         textField.getDocument().addDocumentListener(new DocumentListener() {
             private void update() {
                 clearButton.setVisible(!textField.getText().isEmpty());
@@ -105,7 +102,7 @@ public class ModernTextField extends JPanel {
             @Override public void changedUpdate(DocumentEvent e) { update(); }
         });
 
-        // Forward clicks on the wrapper panel to the textfield
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -134,11 +131,11 @@ public class ModernTextField extends JPanel {
         int w = getWidth();
         int h = getHeight();
 
-        // Background fill
+
         g2.setColor(Theme.INPUT_BG);
         g2.fillRoundRect(0, 0, w, h, Theme.RADIUS_INPUT, Theme.RADIUS_INPUT);
 
-        // Border stroke (highlight when focused)
+
         if (isFocused) {
             g2.setColor(Theme.PRIMARY);
             g2.setStroke(new BasicStroke(1.8f));

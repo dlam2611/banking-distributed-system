@@ -8,9 +8,8 @@ import java.util.UUID;
 
 public class TransactionRepository {
 
-    /**
-     * Lưu bản ghi giao dịch trong cùng Transaction DB.
-     */
+
+
     public boolean save(Connection conn, Transaction tx) throws SQLException {
         String sql = "INSERT INTO transactions (transaction_id, from_account, to_account, amount, transaction_type, status, description, created_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -33,10 +32,8 @@ public class TransactionRepository {
 
     private final AccountRepository accountRepository = new AccountRepository();
 
-    /**
-     * Lấy danh sách giao dịch gần nhất của tài khoản (gửi hoặc nhận).
-     * Server tự động tra cứu tên người dùng đối tác từ toAccount (hoặc fromAccount).
-     */
+
+
     public java.util.List<Transaction> findRecentByAccount(String accountId, int limit) {
         java.util.List<Transaction> list = new java.util.ArrayList<>();
         if (accountId == null || accountId.trim().isEmpty()) {
@@ -60,7 +57,7 @@ public class TransactionRepository {
                     tx.setTransactionType(rs.getString("transaction_type"));
                     tx.setStatus(rs.getString("status"));
 
-                    // Phía server tự động từ toAccount (hoặc fromAccount) lấy ra tên người dùng
+
                     String counterpartyAcc = accountId.equals(tx.getFromAccount()) ? tx.getToAccount() : tx.getFromAccount();
                     String personName = null;
                     if (counterpartyAcc != null && !counterpartyAcc.trim().isEmpty()) {

@@ -9,9 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
-/**
- * Reusable Card Container with rounded corners, subtle border, and soft drop shadow.
- */
 public class CardPanel extends JPanel {
 
     private int cornerRadius = Theme.RADIUS_CARD;
@@ -62,7 +59,7 @@ public class CardPanel extends JPanel {
         int cardX = (w - cardW) / 2;
         int cardY = 1;
 
-        // Ambient soft drop shadow
+
         if (showShadow) {
             g2.setColor(new Color(15, 23, 42, 8));
             g2.fillRoundRect(cardX, cardY + 3, cardW, cardH, cornerRadius + 2, cornerRadius + 2);
@@ -70,11 +67,11 @@ public class CardPanel extends JPanel {
             g2.fillRoundRect(cardX, cardY + 2, cardW, cardH, cornerRadius, cornerRadius);
         }
 
-        // Card surface
+
         g2.setColor(backgroundColor);
         g2.fillRoundRect(cardX, cardY, cardW, cardH, cornerRadius, cornerRadius);
 
-        // Subtle border
+
         if (borderColor != null) {
             g2.setColor(borderColor);
             g2.setStroke(new BasicStroke(1.0f));

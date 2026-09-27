@@ -3,10 +3,6 @@ package lock;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Quản lý khóa (Lock) theo số tài khoản nhằm chống Race Condition và Deadlock
- * khi nhiều luồng thực hiện chuyển tiền đồng thời.
- */
 public class AccountLockManager {
 
     private static final AccountLockManager INSTANCE = new AccountLockManager();
@@ -19,18 +15,14 @@ public class AccountLockManager {
         return INSTANCE;
     }
 
-    /**
-     * Lấy hoặc tạo mới ReentrantLock cho từng accountId.
-     */
+
+
     public ReentrantLock getLock(String accountId) {
         return lockMap.computeIfAbsent(accountId, k -> new ReentrantLock(true));
     }
 
-    /**
-     * Khóa 2 tài khoản theo thứ tự từ điển (Canonical Lock Ordering).
-     * Bắt buộc khóa theo thứ tự chữ cái của accountId để TRIỆT TIÊU 100% DEADLOCK
-     * khi tài khoản A chuyển cho B và B chuyển cho A cùng lúc!
-     */
+
+
     public void lockAccounts(String account1, String account2) {
         if (account1 == null || account2 == null) return;
 
@@ -43,9 +35,8 @@ public class AccountLockManager {
         }
     }
 
-    /**
-     * Mở khóa 2 tài khoản theo thứ tự ngược lại.
-     */
+
+
     public void unlockAccounts(String account1, String account2) {
         if (account1 == null || account2 == null) return;
 

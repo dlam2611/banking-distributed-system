@@ -50,21 +50,13 @@ import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/**
- * Giao diện Chuyển tiền (Transfer Screen) NexBank Digital Core.
- * - Tra cứu tài khoản thụ hưởng tự động khi người dùng kích chuột ra ngoài (blur / focusLost).
- * - Hiển thị ngay lập tức TÊN CHỦ TÀI KHOẢN hoặc "Tài khoản không tồn tại" (Không cần bất kỳ nút kiểm tra nào).
- * - Chọn nhanh số tiền (50k, 100k, 200k, 500k, 1M, 2M, Tất cả).
- * - Xác thực bảo mật bằng mã PIN 6 số.
- * - Biên lai giao dịch chuẩn ngân hàng số.
- */
 public class TransferFrame extends JFrame {
 
     private final Account account;
     private final HomeFrame parentHome;
     private final SocketClient socketClient = SocketClient.getInstance();
 
-    // Input fields
+
     private CardPanel recipientCard;
     private ModernTextField toAccountField;
     private JPanel recipientStatusPanel;
@@ -77,7 +69,7 @@ public class TransferFrame extends JFrame {
     private ModernPasswordField pinField;
     private ModernButton submitButton;
 
-    // Cache verified recipient
+
     private String verifiedTargetAccount = null;
     private String verifiedRecipientName = null;
     private boolean isRecipientValid = false;
@@ -100,16 +92,16 @@ public class TransferFrame extends JFrame {
     private void initUI() {
         setLayout(new BorderLayout());
 
-        // Top Navigation Bar
+
         add(createTopNavBar(), BorderLayout.NORTH);
 
-        // Content ScrollPane
+
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
         content.setBorder(BorderFactory.createEmptyBorder(10, 16, 16, 16));
 
-        // Click outside anywhere in content removes focus from inputs (triggering auto check)
+
         content.setFocusable(true);
         content.addMouseListener(new MouseAdapter() {
             @Override
@@ -118,23 +110,23 @@ public class TransferFrame extends JFrame {
             }
         });
 
-        // 1. Thẻ tài khoản nguồn
+
         content.add(createSourceAccountCard());
         content.add(Box.createVerticalStrut(8));
 
-        // 2. Thẻ tài khoản người nhận (Tự động kiểm tra trên blur)
+
         content.add(createRecipientCard());
         content.add(Box.createVerticalStrut(8));
 
-        // 3. Thẻ số tiền & nội dung chuyển khoản
+
         content.add(createTransferDetailsCard());
         content.add(Box.createVerticalStrut(8));
 
-        // 4. Thẻ xác thực mã PIN
+
         content.add(createSecurityPinCard());
         content.add(Box.createVerticalStrut(12));
 
-        // 5. Nút xác nhận chuyển tiền
+
         submitButton = ModernButton.createPrimary("Xác nhận chuyển tiền");
         submitButton.setPreferredSize(new Dimension(380, 46));
         submitButton.setMaximumSize(new Dimension(380, 46));
@@ -156,9 +148,8 @@ public class TransferFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Top Bar: [← Quay lại] ---- [Chuyển tiền 24/7] ---- [Spacer]
-     */
+
+
     private JPanel createTopNavBar() {
         JPanel nav = new JPanel(new BorderLayout(10, 0)) {
             @Override
@@ -172,7 +163,7 @@ public class TransferFrame extends JFrame {
         nav.setPreferredSize(new Dimension(430, 48));
         nav.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
 
-        // Nút Back
+
         JPanel backBtn = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 10));
         backBtn.setOpaque(false);
         backBtn.setCursor(Theme.HAND_CURSOR);
@@ -191,12 +182,12 @@ public class TransferFrame extends JFrame {
             }
         });
 
-        // Tiêu đề giữa
+
         JLabel titleLbl = new JLabel("Chuyển tiền nội bộ 24/7", SwingConstants.CENTER);
         titleLbl.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 15));
         titleLbl.setForeground(Theme.TEXT_PRIMARY);
 
-        // Spacer bên phải để cân đối tiêu đề
+
         JPanel rightSpacer = new JPanel();
         rightSpacer.setOpaque(false);
         rightSpacer.setPreferredSize(new Dimension(75, 48));
@@ -208,9 +199,8 @@ public class TransferFrame extends JFrame {
         return nav;
     }
 
-    /**
-     * Card 1: Tài khoản nguồn (Người gửi)
-     */
+
+
     private JPanel createSourceAccountCard() {
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -219,7 +209,7 @@ public class TransferFrame extends JFrame {
         card.setMaximumSize(new Dimension(380, 84));
         card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Header: TÀI KHOẢN NGUỒN + Logo
+
         JPanel top = new JPanel(new BorderLayout());
         top.setOpaque(false);
 
@@ -234,7 +224,7 @@ public class TransferFrame extends JFrame {
         top.add(srcTitle, BorderLayout.WEST);
         top.add(brandBadge, BorderLayout.EAST);
 
-        // STK + Số dư
+
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.setOpaque(false);
 
@@ -246,7 +236,7 @@ public class TransferFrame extends JFrame {
         BigDecimal bal = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
         JLabel balLbl = new JLabel("Số dư: " + formatCurrency(bal));
         balLbl.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 13));
-        balLbl.setForeground(new Color(5, 150, 105)); // Emerald green
+        balLbl.setForeground(new Color(5, 150, 105));
 
         bottom.add(accLbl, BorderLayout.WEST);
         bottom.add(balLbl, BorderLayout.EAST);
@@ -258,12 +248,8 @@ public class TransferFrame extends JFrame {
         return card;
     }
 
-    /**
-     * Card 2: Tài khoản thụ hưởng (Người nhận)
-     * - TỰ ĐỘNG kiểm tra khi kích chuột ra khỏi ô nhập (focusLost).
-     * - CHỈ hiển thị tên chủ tài khoản hoặc "Tài khoản không tồn tại".
-     * - Hoàn toàn KHÔNG có nút kiểm tra nào.
-     */
+
+
     private JPanel createRecipientCard() {
         recipientCard = new CardPanel();
         recipientCard.setLayout(new BoxLayout(recipientCard, BoxLayout.Y_AXIS));
@@ -276,12 +262,12 @@ public class TransferFrame extends JFrame {
         recipientCard.add(label);
         recipientCard.add(Box.createVerticalStrut(5));
 
-        // Ô nhập số tài khoản nhận
+
         toAccountField = new ModernTextField("Nhập số tài khoản nhận", VectorIcons.createCardIcon(17, Theme.TEXT_MUTED));
         toAccountField.setPreferredSize(new Dimension(352, 44));
         toAccountField.setMaximumSize(new Dimension(352, 44));
 
-        // GẮN LISTENER: Khi kích chuột ra khỏi text (focusLost) -> tự động kiểm tra ngay
+
         toAccountField.getUnderlyingField().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -289,13 +275,13 @@ public class TransferFrame extends JFrame {
             }
         });
 
-        // Nhấn phím Enter cũng tự động kích hoạt kiểm tra
+
         toAccountField.getUnderlyingField().addActionListener(e -> {
             autoCheckRecipientAccount();
             amountField.getUnderlyingField().requestFocusInWindow();
         });
 
-        // Khi người dùng đang gõ lại, nếu nội dung đổi thì reset trạng thái xác thực cũ
+
         toAccountField.getUnderlyingField().getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { onTextChanged(); }
             @Override public void removeUpdate(DocumentEvent e) { onTextChanged(); }
@@ -314,7 +300,7 @@ public class TransferFrame extends JFrame {
         recipientCard.add(toAccountField);
         recipientCard.add(Box.createVerticalStrut(6));
 
-        // BANNER KẾT QUẢ: Chỉ hiện Tên người đó HOẶC "Tài khoản không tồn tại"
+
         recipientStatusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4)) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -329,7 +315,7 @@ public class TransferFrame extends JFrame {
         recipientStatusPanel.setOpaque(false);
         recipientStatusPanel.setPreferredSize(new Dimension(352, 32));
         recipientStatusPanel.setMaximumSize(new Dimension(352, 32));
-        recipientStatusPanel.setVisible(false); // Ẩn ban đầu
+        recipientStatusPanel.setVisible(false);
 
         recipientStatusIcon = new JLabel();
         recipientStatusLabel = new JLabel();
@@ -343,14 +329,12 @@ public class TransferFrame extends JFrame {
         return recipientCard;
     }
 
-    /**
-     * Logic Tự Động Tra Cứu Tài Khoản Khi Kích Chuột Ra Khỏi Text:
-     * Gửi yêu cầu qua Socket -> Server tra cứu DB -> Phản hồi ngay lập tức.
-     */
+
+
     private void autoCheckRecipientAccount() {
         String inputAcc = toAccountField.getText().trim();
 
-        // 1. Nếu trống thì ẩn banner kết quả
+
         if (inputAcc.isEmpty()) {
             recipientStatusPanel.setVisible(false);
             isRecipientValid = false;
@@ -364,12 +348,12 @@ public class TransferFrame extends JFrame {
             return;
         }
 
-        // Nếu chuỗi nhập không đổi so với lần vừa kiểm tra thì không cần gửi lại server
+
         if (inputAcc.equals(lastCheckedInput) && recipientStatusPanel.isVisible()) {
             return;
         }
 
-        // 2. Không cho phép tự chuyển tiền cho chính mình
+
         if (inputAcc.equalsIgnoreCase(account.getAccountId())) {
             showStatusBanner(
                     VectorIcons.createWarningIcon(14, new Color(180, 83, 9)),
@@ -386,7 +370,7 @@ public class TransferFrame extends JFrame {
 
         lastCheckedInput = inputAcc;
 
-        // 3. Hiển thị trạng thái đang kiểm tra nhẹ nhàng
+
         showStatusBanner(
                 VectorIcons.createShieldIcon(14, new Color(2, 132, 199)),
                 "Đang kiểm tra...",
@@ -394,7 +378,7 @@ public class TransferFrame extends JFrame {
                 new Color(2, 132, 199)
         );
 
-        // 4. Gửi request tra cứu đến Server bất đồng bộ để không treo giao diện
+
         new SwingWorker<Response, Void>() {
             @Override
             protected Response doInBackground() {
@@ -408,7 +392,7 @@ public class TransferFrame extends JFrame {
                     if (response != null && response.getStatus() == Status.SUCCESS && response.getData() != null) {
                         Account target = JsonUtil.fromJson(response.getData(), Account.class);
                         if (target != null && target.getFullName() != null && !target.getFullName().trim().isEmpty()) {
-                            // Thành công: CHỈ HIỂN THỊ TÊN NGƯỜI ĐÓ
+
                             String foundName = target.getFullName().trim().toUpperCase();
                             verifiedTargetAccount = inputAcc;
                             verifiedRecipientName = foundName;
@@ -417,14 +401,14 @@ public class TransferFrame extends JFrame {
                             showStatusBanner(
                                     VectorIcons.createCheckIcon(14, new Color(6, 95, 70)),
                                     foundName,
-                                    new Color(236, 253, 245), // Nền xanh ngọc nhạt #ECFDF5
-                                    new Color(6, 95, 70)       // Chữ xanh đậm #065F46
+                                    new Color(236, 253, 245),
+                                    new Color(6, 95, 70)
                             );
                             return;
                         }
                     }
 
-                    // Thất bại: CHỈ HIỂN THỊ "Tài khoản không tồn tại"
+
                     showRecipientNotFound();
 
                 } catch (Exception ex) {
@@ -442,8 +426,8 @@ public class TransferFrame extends JFrame {
         showStatusBanner(
                 VectorIcons.createWarningIcon(14, new Color(220, 38, 38)),
                 "Tài khoản không tồn tại",
-                new Color(254, 242, 242), // Nền đỏ nhạt #FEF2F2
-                new Color(220, 38, 38)     // Chữ đỏ #DC2626
+                new Color(254, 242, 242),
+                new Color(220, 38, 38)
         );
     }
 
@@ -459,23 +443,22 @@ public class TransferFrame extends JFrame {
         }
     }
 
-    /**
-     * Card 3: Số tiền & Nội dung chuyển khoản
-     */
+
+
     private JPanel createTransferDetailsCard() {
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // 1. Tiêu đề Số tiền
+
         JLabel amtTitle = new JLabel("SỐ TIỀN CHUYỂN (VNĐ)");
         amtTitle.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 10));
         amtTitle.setForeground(Theme.TEXT_MUTED);
         card.add(amtTitle);
         card.add(Box.createVerticalStrut(5));
 
-        // Ô nhập số tiền
+
         amountField = new ModernTextField("0 đ", VectorIcons.createBankIcon(17, Theme.TEXT_MUTED));
         amountField.setPreferredSize(new Dimension(352, 44));
         amountField.setMaximumSize(new Dimension(352, 44));
@@ -483,7 +466,7 @@ public class TransferFrame extends JFrame {
         amountField.getUnderlyingField().setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 16));
         amountField.getUnderlyingField().setForeground(Theme.PRIMARY);
 
-        // Lắng nghe thay đổi để cập nhật chữ số tiền bằng chữ hoặc format
+
         amountField.getUnderlyingField().getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { updateWords(); }
             @Override public void removeUpdate(DocumentEvent e) { updateWords(); }
@@ -502,18 +485,18 @@ public class TransferFrame extends JFrame {
         card.add(amountField);
         card.add(Box.createVerticalStrut(4));
 
-        // Hạn mức / Chữ số tiền
+
         amountInWordsLabel = new JLabel("Hạn mức chuyển nhanh: 500.000.000 đ/ngày");
         amountInWordsLabel.setFont(new Font(Theme.FONT_FAMILY, Font.PLAIN, 10));
         amountInWordsLabel.setForeground(Theme.TEXT_MUTED);
         card.add(amountInWordsLabel);
         card.add(Box.createVerticalStrut(8));
 
-        // 2. Chip phím tắt chọn nhanh số tiền (50k, 100k, 500k, 1M, 2M, Tất cả)
+
         card.add(createQuickAmountChips());
         card.add(Box.createVerticalStrut(10));
 
-        // 3. Nội dung chuyển tiền
+
         JLabel descTitle = new JLabel("NỘI DUNG CHUYỂN KHOẢN");
         descTitle.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 10));
         descTitle.setForeground(Theme.TEXT_MUTED);
@@ -530,9 +513,8 @@ public class TransferFrame extends JFrame {
         return card;
     }
 
-    /**
-     * Thanh chip bấm nhanh số tiền
-     */
+
+
     private JPanel createQuickAmountChips() {
         JPanel row = new JPanel(new GridLayout(1, 6, 6, 0));
         row.setOpaque(false);
@@ -555,7 +537,7 @@ public class TransferFrame extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 Theme.applyQualityRendering(g2);
-                g2.setColor(new Color(241, 245, 249)); // #F1F5F9
+                g2.setColor(new Color(241, 245, 249));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
                 g2.setColor(new Color(226, 232, 240));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
@@ -581,9 +563,8 @@ public class TransferFrame extends JFrame {
         return chip;
     }
 
-    /**
-     * Card 4: Xác thực mã PIN
-     */
+
+
     private JPanel createSecurityPinCard() {
         CardPanel card = new CardPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -619,11 +600,10 @@ public class TransferFrame extends JFrame {
         return badge;
     }
 
-    /**
-     * Xử lý thực hiện giao dịch chuyển tiền.
-     */
+
+
     private void executeTransfer() {
-        // 1. Kiểm tra tài khoản nhận
+
         String toAcc = toAccountField.getText().trim();
         if (toAcc.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -642,7 +622,7 @@ public class TransferFrame extends JFrame {
             return;
         }
 
-        // Nếu chưa xác thực hoặc người dùng vừa đổi chuỗi mà chưa click ra ngoài
+
         if (!isRecipientValid || verifiedTargetAccount == null || !verifiedTargetAccount.equals(toAcc)) {
             autoCheckRecipientAccount();
             if (!isRecipientValid) {
@@ -654,7 +634,7 @@ public class TransferFrame extends JFrame {
             }
         }
 
-        // 2. Kiểm tra số tiền
+
         BigDecimal amount = parseAmountInput();
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             JOptionPane.showMessageDialog(this,
@@ -673,7 +653,7 @@ public class TransferFrame extends JFrame {
             return;
         }
 
-        // 3. Kiểm tra mã PIN
+
         String pin = pinField.getPasswordString();
         if (pin == null || !pin.trim().matches("^[0-9]{6}$")) {
             JOptionPane.showMessageDialog(this,
@@ -689,13 +669,13 @@ public class TransferFrame extends JFrame {
         final String finalToAcc = toAcc;
         final BigDecimal finalAmount = amount;
 
-        // 4. Vô hiệu hóa nút trong khi gửi
+
         submitButton.setEnabled(false);
         submitButton.setText("Đang xử lý giao dịch...");
 
         final TransferDTO dto = new TransferDTO(finalToAcc, finalAmount, pin.trim(), description);
 
-        // 5. Gửi request chuyển tiền bất đồng bộ
+
         new SwingWorker<Response, Void>() {
             @Override
             protected Response doInBackground() {
@@ -710,16 +690,16 @@ public class TransferFrame extends JFrame {
                 try {
                     Response response = get();
                     if (response != null && response.getStatus() == Status.SUCCESS) {
-                        // Trừ tiền tài khoản nguồn
+
                         BigDecimal newBalance = account.getBalance().subtract(finalAmount);
                         account.setBalance(newBalance);
 
-                        // Cập nhật HomeFrame nếu đang mở
+
                         if (parentHome != null) {
                             parentHome.updateAccountAndRefresh(account);
                         }
 
-                        // Lấy thông tin Transaction trả về từ Server nếu có
+
                         Transaction tx = null;
                         if (response.getData() != null) {
                             try {
@@ -727,7 +707,7 @@ public class TransferFrame extends JFrame {
                             } catch (Exception ignored) {}
                         }
 
-                        // Hiển thị Biên lai thành công
+
                         showSuccessReceiptDialog(finalToAcc, verifiedRecipientName, finalAmount, description, tx);
 
                     } else {
@@ -749,9 +729,8 @@ public class TransferFrame extends JFrame {
         }.execute();
     }
 
-    /**
-     * Hộp thoại Biên lai Chuyển tiền Thành công sang trọng.
-     */
+
+
     private void showSuccessReceiptDialog(String toAcc, String toName, BigDecimal amount, String desc, Transaction tx) {
         JDialog dialog = new JDialog(this, "Biên lai giao dịch", true);
         dialog.setSize(380, 480);
@@ -764,13 +743,13 @@ public class TransferFrame extends JFrame {
         p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createEmptyBorder(24, 24, 20, 24));
 
-        // 1. Icon tròn xanh checkmark to
+
         JPanel iconCircle = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 Theme.applyQualityRendering(g2);
-                g2.setColor(new Color(236, 253, 245)); // #ECFDF5
+                g2.setColor(new Color(236, 253, 245));
                 g2.fillOval(0, 0, getWidth(), getHeight());
                 g2.dispose();
                 super.paintComponent(g);
@@ -787,7 +766,7 @@ public class TransferFrame extends JFrame {
         p.add(iconCircle);
         p.add(Box.createVerticalStrut(12));
 
-        // 2. Chuyển tiền thành công
+
         JLabel successTitle = new JLabel("Chuyển tiền thành công!", SwingConstants.CENTER);
         successTitle.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 18));
         successTitle.setForeground(Theme.TEXT_PRIMARY);
@@ -795,18 +774,18 @@ public class TransferFrame extends JFrame {
         p.add(successTitle);
         p.add(Box.createVerticalStrut(6));
 
-        // 3. Số tiền to nổi bật
+
         JLabel amtBig = new JLabel("-" + formatCurrency(amount), SwingConstants.CENTER);
         amtBig.setFont(new Font(Theme.FONT_FAMILY, Font.BOLD, 22));
-        amtBig.setForeground(new Color(220, 38, 38)); // Red for outgoing
+        amtBig.setForeground(new Color(220, 38, 38));
         amtBig.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(amtBig);
         p.add(Box.createVerticalStrut(18));
 
-        // 4. Bảng chi tiết
+
         JPanel detailsCard = new JPanel();
         detailsCard.setLayout(new BoxLayout(detailsCard, BoxLayout.Y_AXIS));
-        detailsCard.setBackground(new Color(248, 250, 252)); // Slate 50
+        detailsCard.setBackground(new Color(248, 250, 252));
         detailsCard.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
                 BorderFactory.createEmptyBorder(12, 14, 12, 14)
@@ -830,7 +809,7 @@ public class TransferFrame extends JFrame {
         p.add(detailsCard);
         p.add(Box.createVerticalStrut(20));
 
-        // 5. Nút về trang chủ
+
         ModernButton homeBtn = ModernButton.createPrimary("Về trang chủ");
         homeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         homeBtn.addActionListener(e -> {

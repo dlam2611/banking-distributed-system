@@ -90,11 +90,8 @@ public class AccountRepository {
         }
     }
 
-    /**
-     * Trừ tiền tài khoản nguồn trong giao dịch DB (Transaction-aware).
-     * Điều kiện AND balance >= ? đảm bảo nguyên tử, chống rút âm tiền tuyệt đối.
-     * Trả về số dòng cập nhật (1 là thành công, 0 là số dư không đủ).
-     */
+
+
     public int debit(Connection conn, String accountId, BigDecimal amount) throws SQLException {
         String sql = "UPDATE accounts SET balance = balance - ? WHERE account_id = ? AND balance >= ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -105,10 +102,8 @@ public class AccountRepository {
         }
     }
 
-    /**
-     * Cộng tiền tài khoản nhận trong giao dịch DB (Transaction-aware).
-     * Trả về số dòng cập nhật (1 là thành công, 0 là thất bại).
-     */
+
+
     public int credit(Connection conn, String accountId, BigDecimal amount) throws SQLException {
         String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -118,9 +113,8 @@ public class AccountRepository {
         }
     }
 
-    /**
-     * Cập nhật mật khẩu mới (đã mã hóa) cho tài khoản.
-     */
+
+
     public boolean updatePassword(String accountId, String hashedPassword) throws SQLException {
         String sql = "UPDATE accounts SET password = ? WHERE account_id = ?";
         try (Connection conn = DBConnection.getConnection();

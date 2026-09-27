@@ -30,14 +30,14 @@ public class ServerConfig {
         this.port = Integer.parseInt(props.getProperty("port", "9000").trim());
         this.serverPort = Integer.parseInt(props.getProperty("server.port", "8080").trim());
 
-        // Danh sách các địa chỉ IP của 3 server (không cần truyền port, tự động dùng serverPort 8080)
+
         String ips = props.getProperty("server.ips", "192.168.1.6,192.168.1.7,192.168.1.8").trim();
         String[] ipArray = ips.split(",");
         for (int i = 0; i < ipArray.length; i++) {
             String item = ipArray[i].trim();
             if (!item.isEmpty()) {
                 String ip = item;
-                int port = this.serverPort; // Cùng port
+                int port = this.serverPort;
                 if (item.contains(":")) {
                     String[] parts = item.split(":");
                     ip = parts[0].trim();

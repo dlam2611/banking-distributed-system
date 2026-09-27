@@ -12,9 +12,6 @@ import java.awt.geom.GeneralPath;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 
-/**
- * Custom modern checkbox with emerald green fill and crisp checkmark.
- */
 public class ModernCheckBox extends JCheckBox {
 
     public ModernCheckBox(String text) {
@@ -47,11 +44,11 @@ public class ModernCheckBox extends JCheckBox {
             int corner = 5;
 
             if (selected) {
-                // Filled green box
+
                 g2.setColor(Theme.PRIMARY);
                 g2.fillRoundRect(x, y, boxSize, boxSize, corner, corner);
 
-                // White checkmark
+
                 g2.setColor(Color.WHITE);
                 g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 GeneralPath check = new GeneralPath();
@@ -60,11 +57,11 @@ public class ModernCheckBox extends JCheckBox {
                 check.lineTo(x + 14, y + 5);
                 g2.draw(check);
             } else {
-                // Empty white box with border
+
                 g2.setColor(Color.WHITE);
                 g2.fillRoundRect(x, y, boxSize, boxSize, corner, corner);
 
-                g2.setColor(new Color(203, 213, 225)); // #CBD5E1
+                g2.setColor(new Color(203, 213, 225));
                 g2.setStroke(new BasicStroke(1.5f));
                 g2.drawRoundRect(x + 1, y + 1, boxSize - 2, boxSize - 2, corner, corner);
             }
