@@ -31,7 +31,7 @@ public class ServerConfig {
         this.serverPort = Integer.parseInt(props.getProperty("server.port", "8080").trim());
 
 
-        String ips = props.getProperty("server.ips", "192.168.1.6,192.168.1.7,192.168.1.8").trim();
+        String ips = props.getProperty("server.ips", "172.22.122.162,172.22.122.80,192.168.1.8").trim();
         String[] ipArray = ips.split(",");
         for (int i = 0; i < ipArray.length; i++) {
             String item = ipArray[i].trim();

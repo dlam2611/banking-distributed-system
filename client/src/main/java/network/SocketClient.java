@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SocketClient {
 
-    private String host = "127.0.0.1";
+    private String host = "172.22.122.162";
     private int primaryPort = 9000;
     private int fallbackPort = 8080;
     private int timeoutMs = 5000;
