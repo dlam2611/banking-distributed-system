@@ -46,7 +46,6 @@ public class SocketClient {
             return Response.error(null, Status.INVALID_REQUEST, "Yêu cầu không được để trống!");
         }
 
-
         try {
             return executeSocketCall(host, primaryPort, request);
         } catch (IOException e1) {

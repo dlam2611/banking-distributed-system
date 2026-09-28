@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientAcceptor implements Runnable {
 
     private final int port;
-    private final ConsistentHashStrategy routingStrategy;
-    private final TcpForwarder tcpForwarder;
+    private final ConsistentHashStrategy routingStrategy; //Consistent Hash
+    private final TcpForwarder tcpForwarder; //ĐẨY REQUEST SANG SERVER
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final AtomicBoolean running = new AtomicBoolean(false);
     private ServerSocket serverSocket;
